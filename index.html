@@ -488,74 +488,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedNameEl = page.querySelector('#selected-name-restaurant');
     let randomInterval = null;
     
-    let adRestaurants = [];
-    let featuredGreenRestaurant = [];
+    let allAdRestaurants = [];
+    let potentialFeaturedGreen = [];
     let baseRestaurantList = [];
 
-    // --- Initial Data Processing for Ads and Green Score ---
     function setupInitialLists() {
         const allRestaurants = [...restaurantData];
-        
-        // 1. Separate Ads
-        adRestaurants = allRestaurants.filter(r => r.isAd);
+        allAdRestaurants = allRestaurants.filter(r => r.isAd);
         const nonAdRestaurants = allRestaurants.filter(r => !r.isAd);
 
-        // 2. Identify and select featured green restaurant
         const top20PercentCount = Math.ceil(nonAdRestaurants.length * 0.2);
-        const topGreenCandidates = [...nonAdRestaurants].sort((a, b) => b.greenScore - a.greenScore).slice(0, top20PercentCount);
+        potentialFeaturedGreen = [...nonAdRestaurants].sort((a, b) => b.greenScore - a.greenScore).slice(0, top20PercentCount);
         
-        const featuredCount = Math.ceil(nonAdRestaurants.length * 0.1);
-        
-        // Shuffle candidates and pick the featured ones
-        for (let i = topGreenCandidates.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [topGreenCandidates[i], topGreenCandidates[j]] = [topGreenCandidates[j], topGreenCandidates[i]];
-        }
-        featuredGreenRestaurant = topGreenCandidates.slice(0, featuredCount);
-
-        // 3. Create the base list for filtering/sorting
-        const featuredIds = featuredGreenRestaurant.map(r => r.id);
-        baseRestaurantList = nonAdRestaurants.filter(r => !featuredIds.includes(r.id));
+        const potentialFeaturedIds = potentialFeaturedGreen.map(r => r.id);
+        baseRestaurantList = nonAdRestaurants.filter(r => !potentialFeaturedIds.includes(r.id));
     }
-
 
     populateFilter(provinceFilter, restaurantData, 'province');
 
     function applyFilters() {
-      if (randomInterval) clearInterval(randomInterval);
-      selectedNameEl.textContent = '';
+        if (randomInterval) clearInterval(randomInterval);
+        selectedNameEl.textContent = '';
 
-      const term = searchInput.value.trim().toLowerCase();
-      let filteredList = baseRestaurantList.filter(r => {
-        if (term && !r.name.toLowerCase().includes(term)) return false;
-        if (provinceFilter.value && r.province !== provinceFilter.value) return false;
-        if (districtFilter.value && r.district !== districtFilter.value) return false;
-        if (typeFilter.value && r.type !== typeFilter.value) return false;
-        if (priceFilter.value) {
-          const [min, max] = priceFilter.value.split('-');
-          if (min && r.price < +min) return false;
-          if (max && max !== '' && r.price > +max) return false;
+        const term = searchInput.value.trim().toLowerCase();
+        
+        const matchesFilters = (r) => {
+            if (term && !r.name.toLowerCase().includes(term)) return false;
+            if (provinceFilter.value && r.province !== provinceFilter.value) return false;
+            if (districtFilter.value && r.district !== districtFilter.value) return false;
+            if (typeFilter.value && r.type !== typeFilter.value) return false;
+            if (priceFilter.value) {
+                const [min, max] = priceFilter.value.split('-');
+                if (min && r.price < +min) return false;
+                if (max && max !== '' && r.price > +max) return false;
+            }
+            return true;
+        };
+
+        const displayableAds = allAdRestaurants.filter(matchesFilters);
+        
+        const filteredPotentialGreen = potentialFeaturedGreen.filter(matchesFilters);
+        const featuredCount = Math.ceil(baseRestaurantList.length * 0.1);
+        const displayableFeaturedGreen = [...filteredPotentialGreen].sort(() => 0.5 - Math.random()).slice(0, featuredCount);
+        
+        const featuredIds = displayableFeaturedGreen.map(r => r.id);
+        const nonFeaturedGreen = filteredPotentialGreen.filter(r => !featuredIds.includes(r.id));
+        
+        let displayableBase = [...baseRestaurantList.filter(matchesFilters), ...nonFeaturedGreen];
+
+        if (sortOrder.value) {
+            const [key, dir] = sortOrder.value.split('_');
+            displayableBase.sort((a, b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
         }
-        return true;
-      });
-
-      if (sortOrder.value) {
-        const [key, dir] = sortOrder.value.split('_');
-        filteredList.sort((a,b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
-      }
-      render(filteredList);
+        
+        const fullListToRender = [...displayableAds, ...displayableFeaturedGreen, ...displayableBase];
+        render(fullListToRender);
     }
     
-    function render(filteredData) {
+    function render(data) {
       listEl.innerHTML = '';
-      
-      const fullList = [...adRestaurants, ...featuredGreenRestaurant, ...filteredData];
-
-      if (fullList.length === 0) {
+      if (data.length === 0) {
         listEl.innerHTML = '<div class="message-box">ไม่พบร้านอาหารที่ตรงกับเงื่อนไข</div>';
         return;
       }
-      fullList.forEach(r => listEl.appendChild(createItemCard(r)));
+      data.forEach(r => listEl.appendChild(createItemCard(r)));
     }
     
     function updateDistricts() {
