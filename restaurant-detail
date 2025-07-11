@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายละเอียดร้านอาหาร</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #F7F9F7;
+      --accent-color: #E53935;
+      --text-color: #212529;
+      --light-text: #6c757d;
+      --card-bg: #FFFFFF;
+      --card-radius: 12px;
+    }
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: var(--secondary-color);
+    }
+    .font-sarabun { font-family: 'Sarabun', sans-serif; }
+    .bg-primary { background-color: var(--primary-color); }
+    .text-primary { color: var(--primary-color); }
+    .bg-accent { background-color: var(--accent-color); }
+    .text-accent { color: var(--accent-color); }
+    
+    .modal-fade {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-fade.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #toast-notification {
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(100%);
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  </style>
+</head>
+<body class="font-sarabun relative">
+
+  <!-- Header -->
+  <nav class="bg-white shadow-md sticky top-0 z-20">
+    <div class="container mx-auto px-6 py-3">
+        <!-- FIXED: Changed href="#" to "index.html" to link back to the main page. -->
+        <a href="index.html" id="back-to-main" class="text-primary font-bold text-xl flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            กลับสู่หน้าแรก
+        </a>
+    </div>
+  </nav>
+
+  <main class="container mx-auto p-4 md:p-6 space-y-8">
+    <!-- Content will be loaded here. Shows a loading message initially. -->
+    <div id="content-placeholder">
+        <h1 class="text-2xl text-center text-gray-500 mt-10">กำลังโหลดข้อมูลร้านอาหาร...</h1>
+    </div>
+    <div id="restaurant-content" class="hidden space-y-8">
+        <!-- 1. Restaurant Info & Discount -->
+        <section>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 id="restaurant-name" class="text-3xl font-bold text-primary"></h1>
+                <p id="restaurant-description" class="text-gray-700 mt-2 max-w-2xl"></p>
+            </div>
+            <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
+                รับโค้ดส่วนลด
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. Main Image -->
+        <div class="relative">
+          <img id="main-image" src="" alt="ภาพหน้าร้าน" class="w-full h-72 object-cover rounded-xl shadow-lg">
+          <span id="image-discount-badge" class="absolute top-4 right-4 bg-accent text-white font-bold px-4 py-2 rounded-full text-lg"></span>
+        </div>
+
+        <!-- 3. Recommended Menu -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">เมนูแนะนำ</h2>
+          <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Menu items will be injected here by JS -->
+          </div>
+        </section>
+
+        <!-- 4. Reviews -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">คะแนนรีวิว</h2>
+          <div class="flex items-center space-x-2 mb-4">
+            <div id="review-stars-summary" class="flex text-yellow-500 text-2xl"></div>
+            <span id="review-summary-text" class="text-gray-600 ml-2 font-semibold text-lg"></span>
+          </div>
+          <div id="review-list" class="space-y-4">
+            <!-- Reviews will be injected here by JS -->
+          </div>
+        </section>
+        
+        <!-- 5. Map -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
+          <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
+            <!-- Map iframe will be injected here -->
+          </div>
+        </section>
+
+        <!-- Details Column (Green Score, Address, etc.) -->
+        <section class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+            <!-- 7. Green Score -->
+            <div>
+              <h2 class="text-2xl font-semibold text-primary mb-4">Green Score</h2>
+              <div class="flex flex-col sm:flex-row items-center sm:space-x-8">
+                  <div class="relative w-32 h-32 flex-shrink-0">
+                      <svg class="w-full h-full" viewBox="0 0 36 36">
+                          <path class="text-gray-200" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                          <path id="green-score-circle" class="text-primary" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      </svg>
+                      <div id="green-score-text" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-primary"></div>
+                  </div>
+                  <ul id="green-score-details" class="mt-4 sm:mt-0 space-y-2">
+                    <!-- Green score details will be injected here -->
+                  </ul>
+              </div>
+            </div>
+            <hr>
+            <!-- Other details -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่ร้าน</h3><p id="address" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div><h3 class="text-lg font-semibold text-primary">ประเภทอาหาร</h3><p id="cuisine-types" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">บรรยากาศ</h3><p id="atmosphere" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">ช่องทางการชำระเงิน</h3><p id="payment-methods" class="text-gray-700"></p></div>
+                <div>
+                    <h3 class="text-lg font-semibold text-primary">ติดต่อเรา</h3>
+                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
+                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13. Write Review -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+          <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
+          <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
+            <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+          </div>
+          <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
+          <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
+        </section>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="discount-modal" class="modal-fade fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-30">
+    <div class="relative bg-white rounded-xl p-6 shadow-lg w-11/12 max-w-sm text-center transform transition-all scale-95 opacity-0" id="modal-content">
+      <button id="modal-close-x" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">×</button>
+      <div id="expense-section">
+        <h3 class="text-xl font-semibold text-primary mb-4">กรุณากรอกราคามื้อนี้</h3>
+        <input id="expense-input" type="number" min="0" placeholder="ยอดค่าอาหาร (บาท)" class="w-full border rounded-lg p-2 mb-4 text-center text-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+        <button id="confirm-expense-btn" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg w-full hover:bg-blue-700 transition">ยืนยันยอด</button>
+      </div>
+      <div id="code-section" class="hidden">
+        <p class="text-gray-700 mb-2">ราคาเต็ม: <span id="full-price" class="font-medium"></span> บาท</p>
+        <p class="text-gray-700 mb-2">ส่วนลด (<span id="discount-percent" class="font-medium"></span>%): <span id="discount-amount" class="font-medium text-accent"></span> บาท</p>
+        <p class="text-gray-700 mb-4">ราคาสุทธิ: <span id="net-price" class="font-bold text-primary text-xl"></span> บาท</p>
+        <h3 class="text-lg font-semibold text-primary mb-2">โค้ดส่วนลดของคุณ</h3>
+        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <p id="discount-code" class="text-3xl font-bold text-accent tracking-widest"></p>
+        </div>
+        <p class="text-gray-600 my-4">หมดอายุ: <span id="expiry-date" class="font-medium"></span></p>
+        <button id="close-modal" class="bg-primary text-white px-6 py-2 rounded-lg w-full hover:bg-green-800 transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 bg-primary text-white px-6 py-3 rounded-lg shadow-xl opacity-0">
+    <p id="toast-message"></p>
+  </div>
+
+  <script>
+    // --- Database of all restaurants ---
+    const allRestaurantsData = [
+        {
+            id: 1, name: "บ้านสวนออร์แกนิก", description: "ร้านอาหารสไตล์ไทยออร์แกนิก บรรยากาศสวนร่มรื่น โฟกัสเมนูสุขภาพ โดยวัตถุดิบปลอดสารพิษและออร์แกนิก", mainImage: "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 10,
+            menu: [
+                { name: "สลัดสมุนไพรสด", image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 120 },
+                { name: "แกงเขียวหวานผักรวม", image: "https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 140 },
+                { name: "ข้าวกล้องผัดกะเพราเต้าหู้", image: "https://images.pexels.com/photos/5835352/pexels-photo-5835352.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 150 },
+                { name: "น้ำสมูทตี้ผักผลไม้รวม", image: "https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 90 }
+            ],
+            reviews: { average: 4.7, total: 18, items: [{ user: "คุณสมชาย", date: "5 มิ.ย. 2025", rating: 5, comment: "บรรยากาศดีมาก อาหารสดใหม่ รสชาติเยี่ยม!" }, { user: "คุณอรทัย", date: "12 พ.ค. 2025", rating: 4, comment: "เมนูหลากหลาย มีตัวเลือกเพื่อสุขภาพเยอะ ชอบมากครับ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0000000000005!2d100.992541315359!3d13.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA3JzI0LjQiTiAxMDDCsDU5JzMzLjIiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "111 หมู่ 5 ต.บางพระ อ.ศรีราชา จ.ชลบุรี 20110", greenScore: { score: 92, details: [{ text: "วัตถุดิบออร์แกนิก", achieved: true }, { text: "จัดการขยะอาหาร", achieved: true }, { text: "ใช้พลังงานสะอาด", achieved: true }] }, amenities: ["Free Wi-Fi", "ที่จอดรถ", "พื้นที่ Outdoor"], cuisine: "ไทย, ออร์แกนิก", atmosphere: "ครอบครัว, สวนสวย", payment: "เงินสด, บัตรเครดิต, PromptPay", contact: { tel: "+66812345671", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 2, name: "ส้มตำแม่บุญช่วย", description: "ร้านส้มตำรสแซ่บถึงใจ สไตล์อีสานแท้ๆ คัดสรรวัตถุดิบสดใหม่ทุกวัน พร้อมเมนูย่างและของทอดหลากหลาย", mainImage: "https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 15,
+            menu: [
+                { name: "ตำปูปลาร้า", image: "https://images.pexels.com/photos/1352270/pexels-photo-1352270.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 60 },
+                { name: "คอหมูย่าง", image: "https://images.pexels.com/photos/3758105/pexels-photo-3758105.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 80 },
+                { name: "ต้มแซ่บกระดูกอ่อน", image: "https://live.staticflickr.com/5567/31333735391_516ce3467c_b.jpg", price: 100 },
+                { name: "ปีกไก่ทอด", image: "https://images.pexels.com/photos/60616/fried-chicken-chicken-fried-crunchy-60616.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 70 }
+            ],
+            reviews: { average: 4.3, total: 45, items: [{ user: "คุณมานะ", date: "1 ก.ค. 2025", rating: 5, comment: "รสชาติจัดจ้านถึงใจจริงๆ ครับ ไม่ผิดหวัง" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3829.0000000000005!2d102.834000315359!3d16.43333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDI2JzAwLjAiTiAxMDLCsDUwJzAyLjQiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "222 ถ.มิตรภาพ ต.ในเมือง อ.เมือง จ.ขอนแก่น 40000", greenScore: { score: 75, details: [{ text: "ใช้วัตถุดิบท้องถิ่น", achieved: true }, { text: "จ้างงานเป็นธรรม", achieved: true }] }, amenities: ["ที่จอดรถริมทาง"], cuisine: "อีสาน", atmosphere: "เป็นกันเอง, คึกคัก", payment: "เงินสด, Mobile Banking", contact: { tel: "+66812345672", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 3, name: "SteakHouse Prime", description: "สัมผัสประสบการณ์สเต็กระดับพรีเมียม ด้วยเนื้อนำเข้าที่คัดสรรมาอย่างดี ย่างด้วยเทคนิคพิเศษเพื่อความสมบูรณ์แบบ", mainImage: "https://images.pexels.com/photos/1251208/pexels-photo-1251208.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 20,
+            menu: [
+                { name: "ริบอายสเต็ก (AUS)", image: "https://images.pexels.com/photos/361184/pexels-photo-361184.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 1250 },
+                { name: "ฟิเลมิยอง", image: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 1450 },
+                { name: "ซีซาร์สลัด", image: "https://images.pexels.com/photos/2097085/pexels-photo-2097085.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 350 },
+                { name: "ทรัฟเฟิลฟรายส์", image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 250 }
+            ],
+            reviews: { average: 4.8, total: 32, items: [{ user: "Mr. John", date: "15 มิ.ย. 2025", rating: 5, comment: "Best steak in town! Perfectly cooked and great service." }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.8000000000005!2d100.561000315359!3d13.73333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzYwLjAiTiAxMDDCsDMzJzM5LjYiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "ชั้น G, The EmQuartier, ถ.สุขุมวิท, วัฒนา, กรุงเทพฯ 10110", greenScore: { score: 60, details: [{ text: "จัดการขยะ", achieved: true }, { text: "จ้างงานเป็นธรรม", achieved: true }] }, amenities: ["ที่จอดรถในห้าง", "Wi-Fi", "รับบัตรเครดิต"], cuisine: "สเต็ก, ตะวันตก", atmosphere: "หรูหรา, เหมาะสำหรับโอกาสพิเศษ", payment: "บัตรเครดิต, เงินสด", contact: { tel: "+66812345673", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 4, name: "ก๋วยเตี๋ยวเรือนายโอ", description: "ก๋วยเตี๋ยวเรือรสเด็ด สูตรดั้งเดิม น้ำซุปเข้มข้น หอมเครื่องเทศ มีทั้งหมูและเนื้อให้เลือก", mainImage: "https://images.pexels.com/photos/2641886/pexels-photo-2641886.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 5,
+            menu: [
+                { name: "ก๋วยเตี๋ยวเรือหมูน้ำตก", image: "https://images.pexels.com/photos/10790638/pexels-photo-10790638.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 50 },
+                { name: "เกาเหลาเนื้อตุ๋น", image: "https://img.kapook.com/u/surauch/cook/35.jpg", price: 70 },
+                { name: "กากหมูเจียว", image: "https://live.staticflickr.com/65535/51236166883_27a2b97836_b.jpg", price: 20 },
+                { name: "ขนมถ้วย", image: "https://images.pexels.com/photos/8969237/pexels-photo-8969237.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 10 }
+            ],
+            reviews: { average: 4.2, total: 88, items: [{ user: "พี่บอย", date: "20 พ.ค. 2025", rating: 4, comment: "น้ำซุปเข้มข้นดีครับ แต่รอนานไปหน่อย" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3858.0000000000005!2d101.500000315359!3d14.66666778901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQwJzAwLjAiTiAxMDHCsDMwJzAwLjAiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "ตลาดปากช่อง, อ.ปากช่อง, จ.นครราชสีมา 30130", greenScore: { score: 55, details: [{ text: "ใช้วัตถุดิบท้องถิ่น", achieved: true }] }, amenities: ["ที่จอดรถรวม"], cuisine: "ก๋วยเตี๋ยว", atmosphere: "ตลาด, คนเยอะ", payment: "เงินสด", contact: { tel: "+66812345674", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 5, name: "La Pizzeria Italiano", description: "พิซซ่าสไตล์อิตาเลียนแท้ แป้งบางกรอบ อบด้วยเตาฟืน พร้อมพาสต้าและเมนูอิตาเลียนคลาสสิก", mainImage: "https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 25,
+            menu: [
+                { name: "พิซซ่ามาเกริต้า", image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 280 },
+                { name: "สปาเก็ตตี้คาโบนาร่า", image: "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 250 },
+                { name: "ผักโขมอบชีส", image: "https://images.pexels.com/photos/9213166/pexels-photo-9213166.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 180 },
+                { name: "ทีรามิสุ", image: "https://images.pexels.com/photos/574111/pexels-photo-574111.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 150 }
+            ],
+            reviews: { average: 4.6, total: 55, items: [{ user: "น้องแพรว", date: "1 มิ.ย. 2025", rating: 5, comment: "พิซซ่าอร่อยมากค่ะ แป้งดีมากเลย" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3777.0000000000005!2d98.985000315359!3d18.78333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDQ3JzAwLjAiTiA5OMKwNTknMDYuMCJF!5e0!3m2!1sen!2sth!4v1651234567890', address: "ถ.นิมมานเหมินท์, ต.สุเทพ, อ.เมือง, จ.เชียงใหม่ 50200", greenScore: { score: 80, details: [{ text: "ใช้วัตถุดิบนำเข้าคุณภาพ", achieved: true }, { text: "จัดการขยะ", achieved: true }] }, amenities: ["Wi-Fi", "รับบัตรเครดิต"], cuisine: "อิตาเลียน", atmosphere: "อบอุ่น, โรแมนติก", payment: "เงินสด, บัตรเครดิต", contact: { tel: "+66812345675", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 6, name: "Buffet ซีฟู้ดเดลิเวอรี่", description: "อิ่มอร่อยกับบุฟเฟ่ต์ซีฟู้ดสดใหม่ส่งตรงถึงบ้านคุณ ทั้งกุ้งเผา ปูม้านึ่ง และหอยนางรมสดๆ", mainImage: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 30,
+            menu: [
+                { name: "กุ้งแม่น้ำเผา", image: "https://images.pexels.com/photos/2282528/pexels-photo-2282528.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 799 },
+                { name: "ปูม้านึ่ง", image: "https://live.staticflickr.com/4304/35926572231_55a29774a3_b.jpg", price: 799 },
+                { name: "หอยนางรมสด", image: "https://images.pexels.com/photos/4955436/pexels-photo-4955436.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 799 },
+                { name: "ปลาหมึกย่าง", image: "https://images.pexels.com/photos/1484677/pexels-photo-1484677.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 799 }
+            ],
+            reviews: { average: 4.9, total: 150, items: [{ user: "คุณเจมส์", date: "10 ก.ค. 2025", rating: 5, comment: "ของสดมากครับ คุ้มค่าสุดๆ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0000000000005!2d98.338000315359!3d7.80000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNDgnMDAuMCJOIDk4wrAyMCcxNi44IkU!5e0!3m2!1sen!2sth!4v1651234567890', address: "หาดราไวย์, ต.ราไวย์, อ.เมือง, จ.ภูเก็ต 83130", greenScore: { score: 95, details: [{ text: "ลดขยะพลาสติก", achieved: true }, { text: "สนับสนุนชาวประมงท้องถิ่น", achieved: true }] }, amenities: ["เดลิเวอรี่เท่านั้น"], cuisine: "ซีฟู้ด, บุฟเฟ่ต์", atmosphere: "ทานที่บ้าน", payment: "Mobile Banking", contact: { tel: "+66812345676", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 7, name: "ร้านข้าวแกงปักษ์ใต้", description: "ข้าวแกงใต้รสเด็ดเผ็ดร้อนถึงเครื่องแกงใต้แท้ๆ มีเมนูให้เลือกหลากหลายในแต่ละวัน", mainImage: "https://images.pexels.com/photos/5419223/pexels-photo-5419223.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 12,
+            menu: [
+                { name: "แกงไตปลา", image: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Kaeng_tai_pla_ingredients.jpg", price: 50 },
+                { name: "คั่วกลิ้งหมูสับ", image: "https://live.staticflickr.com/65535/50352210491_8019e01140_b.jpg", price: 60 },
+                { name: "ใบเหลียงผัดไข่", image: "https://www.krua.co/wp-content/uploads/2021/04/KK_BailiangPadKai_1S-2-1024x576.jpg", price: 50 },
+                { name: "แกงส้มปลากะพง", image: "https://live.staticflickr.com/65535/49699661132_3700078021_b.jpg", price: 70 }
+            ],
+            reviews: { average: 4.1, total: 65, items: [{ user: "ลุงเท่ง", date: "25 มิ.ย. 2025", rating: 4, comment: "หรอยจังฮู้! แต่เผ็ดไปหน่อย" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3948.0000000000005!2d99.300000315359!3d8.40000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMjQnMDAuMCJOIDk5wrAxOCcwMC4wIkU!5e0!3m2!1sen!2sth!4v1651234567890', address: "ตลาดสดเทศบาล, ต.ในเมือง, อ.เมือง, จ.นครศรีธรรมราช 80000", greenScore: { score: 65, details: [{ text: "ใช้วัตถุดิบท้องถิ่น", achieved: true }] }, amenities: ["ซื้อกลับบ้าน"], cuisine: "อาหารใต้, ข้าวแกง", atmosphere: "ตลาด, เรียบง่าย", payment: "เงินสด", contact: { tel: "+66812345677", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 8, name: "Sushi Master", description: "โอมากาเสะและซูชิคุณภาพพรีเมียม ปั้นโดยเชฟผู้เชี่ยวชาญ คัดสรรวัตถุดิบที่ดีที่สุดตามฤดูกาล", mainImage: "https://images.pexels.com/photos/8890641/pexels-photo-8890641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 18,
+            menu: [
+                { name: "โอโทโร่ซูชิ", image: "https://images.pexels.com/photos/6113759/pexels-photo-6113759.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 450 },
+                { name: "แซลมอนซาชิมิ (5 ชิ้น)", image: "https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 350 },
+                { name: "ฟัวกราส์ซูชิ", image: "https://images.pexels.com/photos/8761453/pexels-photo-8761453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 400 },
+                { name: "แคลิฟอร์เนียโรล", image: "https://images.pexels.com/photos/725991/pexels-photo-725991.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 300 }
+            ],
+            reviews: { average: 4.5, total: 40, items: [{ user: "คุณมายด์", date: "5 ก.ค. 2025", rating: 5, comment: "ปลาสดมาก ละลายในปากเลยค่ะ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.9000000000005!2d100.520000315359!3d13.72500078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzMwLjAiTiAxMDDCsDMxJzEyLjAiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "ชั้น 2, Silom Complex, ถ.สีลม, บางรัก, กรุงเทพฯ 10500", greenScore: { score: 85, details: [{ text: "วัตถุดิบนำเข้า", achieved: true }, { text: "ลดขยะอาหาร", achieved: true }] }, amenities: ["รับบัตรเครดิต", "สำรองที่นั่ง"], cuisine: "ญี่ปุ่น, ซูชิ", atmosphere: "โมเดิร์น, เคาน์เตอร์บาร์", payment: "บัตรเครดิต, เงินสด", contact: { tel: "+66812345678", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 9, name: "Curry & Rice", description: "ข้าวแกงกะหรี่สไตล์ญี่ปุ่นแท้ๆ น้ำแกงเข้มข้นหอมกรุ่น เลือกท็อปปิ้งและระดับความเผ็ดได้ตามใจชอบ", mainImage: "https://images.pexels.com/photos/1070053/pexels-photo-1070053.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 22,
+            menu: [
+                { name: "ข้าวแกงกะหรี่หมูทอด", image: "https://images.pexels.com/photos/10599424/pexels-photo-10599424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 180 },
+                { name: "ข้าวแกงกะหรี่ไก่คาราเกะ", image: "https://images.pexels.com/photos/14537691/pexels-photo-14537691.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 170 },
+                { name: "ข้าวหน้าเนื้อ", image: "https://images.pexels.com/photos/1988624/pexels-photo-1988624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 220 },
+                { name: "สลัดมันฝรั่ง", image: "https://images.pexels.com/photos/5639433/pexels-photo-5639433.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 80 }
+            ],
+            reviews: { average: 4.4, total: 72, items: [{ user: "คุณอาร์ม", date: "18 พ.ค. 2025", rating: 4, comment: "อร่อยดีครับ เพิ่มชีสได้ด้วย" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3865.0000000000005!2d100.000000315359!3d14.50000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDMwJzAwLjAiTiAxMDDCsDAwJzAwLjAiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "อ.อู่ทอง, จ.สุพรรณบุรี 72160", greenScore: { score: 70, details: [{ text: "จ้างงานเป็นธรรม", achieved: true }] }, amenities: ["ที่จอดรถ"], cuisine: "ญี่ปุ่น, แกงกะหรี่", atmosphere: "เรียบง่าย, สะอาด", payment: "เงินสด, Mobile Banking", contact: { tel: "+66812345679", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        },
+        {
+            id: 10, name: "Burger Town", description: "เบอร์เกอร์โฮมเมดชิ้นโต เนื้อฉ่ำๆ ขนมปังนุ่มๆ พร้อมซอสสูตรพิเศษของทางร้าน", mainImage: "https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 8,
+            menu: [
+                { name: "ดับเบิ้ลชีสเบอร์เกอร์", image: "https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 250 },
+                { name: "เบอร์เกอร์เบคอน", image: "https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 220 },
+                { name: "หัวหอมทอด", image: "https://images.pexels.com/photos/718742/pexels-photo-718742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 90 },
+                { name: "มิลค์เชค", image: "https://images.pexels.com/photos/3727255/pexels-photo-3727255.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 120 }
+            ],
+            reviews: { average: 4.0, total: 58, items: [{ user: "น้องกิ๊ฟ", date: "30 มิ.ย. 2025", rating: 4, comment: "อร่อยมากค่ะ ชิ้นใหญ่มาก" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.0000000000005!2d98.600000315359!3d10.45000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDI3JzAwLjAiTiA5OMKwMzYnMDAuMCJF!5e0!3m2!1sen!2sth!4v1651234567890', address: "ถ.กรมหลวงชุมพร, ต.ท่าตะเภา, อ.เมือง, จ.ชุมพร 86000", greenScore: { score: 50, details: [{ text: "ใช้วัตถุดิบท้องถิ่นบางส่วน", achieved: true }] }, amenities: ["ที่จอดรถ", "Wi-Fi"], cuisine: "เบอร์เกอร์, อเมริกัน", atmosphere: "วัยรุ่น, สนุกสนาน", payment: "เงินสด, บัตรเครดิต", contact: { tel: "+66812345680", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg", line: "https://line.me/R/ti/p/@scg" }
+        }
+    ];
+
+    // --- DOM Elements ---
+    const contentPlaceholder = document.getElementById('content-placeholder');
+    const restaurantContent = document.getElementById('restaurant-content');
+    const discountBtn = document.getElementById('discount-btn');
+    const modal = document.getElementById('discount-modal');
+    const modalContent = document.getElementById('modal-content');
+    const expenseSection = document.getElementById('expense-section');
+    const confirmBtn = document.getElementById('confirm-expense-btn');
+    const expenseInput = document.getElementById('expense-input');
+    const codeSection = document.getElementById('code-section');
+    const closeBtn = document.getElementById('close-modal');
+    const closeX = document.getElementById('modal-close-x');
+    const stars = document.querySelectorAll('#star-rating-input span');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    let currentRestaurant = null;
+
+    // --- Functions ---
+    
+    function populatePage(data) {
+        currentRestaurant = data;
+        document.title = `${data.name} - รายละเอียดร้าน`;
+        document.getElementById('restaurant-name').textContent = data.name;
+        document.getElementById('restaurant-description').textContent = data.description;
+        document.getElementById('main-image').src = data.mainImage;
+        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
+
+        // Menu
+        const menuGrid = document.getElementById('menu-grid');
+        menuGrid.innerHTML = '';
+        data.menu.forEach(item => {
+            menuGrid.innerHTML += `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover" onerror="this.style.display='none'">
+                  <div class="p-4">
+                    <h3 class="text-lg font-medium text-gray-800">${item.name}</h3>
+                    <p class="text-gray-600 mt-1 font-semibold">${item.price} บาท</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        // Reviews
+        const reviewStarsSummary = document.getElementById('review-stars-summary');
+        reviewStarsSummary.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            reviewStarsSummary.innerHTML += `<span class="${i <= data.reviews.average ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+        }
+        document.getElementById('review-summary-text').textContent = `${data.reviews.average} / 5.0 (${data.reviews.total} รีวิว)`;
+        
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+        data.reviews.items.forEach(review => {
+            reviewList.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow">
+                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
+                  <p class="text-gray-800">“${review.comment}”</p>
+                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
+                </div>
+            `;
+        });
+
+        // Map
+        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
+        
+        // Details Column
+        document.getElementById('address').textContent = data.address;
+        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
+        document.getElementById('cuisine-types').textContent = data.cuisine;
+        document.getElementById('atmosphere').textContent = data.atmosphere;
+        document.getElementById('payment-methods').textContent = data.payment;
+        
+        // Green Score
+        const greenScoreCircle = document.getElementById('green-score-circle');
+        const greenScoreText = document.getElementById('green-score-text');
+        const greenScoreDetails = document.getElementById('green-score-details');
+        greenScoreText.textContent = `${data.greenScore.score}`;
+        greenScoreCircle.style.strokeDasharray = `${data.greenScore.score}, 100`;
+        greenScoreDetails.innerHTML = data.greenScore.details.map(d => `
+            <li class="flex items-center"><span class="mr-2 ${d.achieved ? 'text-primary' : 'text-gray-400'}">${d.achieved ? '✓' : '✗'}</span> ${d.text}</li>
+        `).join('');
+
+        // Contact
+        const telLink = document.getElementById('contact-tel');
+        if (data.contact && data.contact.tel) {
+            telLink.href = `tel:${data.contact.tel}`;
+            telLink.textContent = data.contact.tel;
+        }
+        if (data.contact) {
+            document.getElementById('social-media-links').innerHTML = `
+                <a href="${data.contact.facebook || '#'}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
+                <a href="${data.contact.instagram || '#'}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
+                <a href="${data.contact.line || '#'}" class="text-green-500 hover:underline" target="_blank">Line</a>
+            `;
+        }
+
+        // Show content
+        contentPlaceholder.classList.add('hidden');
+        restaurantContent.classList.remove('hidden');
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openModal() {
+        if (!currentRestaurant) return;
+        expenseInput.value = '';
+        codeSection.classList.add('hidden');
+        expenseSection.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function getRestaurantIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return parseInt(params.get('id'));
+    }
+
+    // --- Event Listeners ---
+    discountBtn.addEventListener('click', openModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const amount = parseFloat(expenseInput.value) || 0;
+      if (amount <= 0) {
+          showToast("กรุณากรอกยอดค่าอาหารที่ถูกต้อง");
+          return;
+      }
+      const discountAmt = Math.round(amount * currentRestaurant.discount / 100);
+      const netPrice = amount - discountAmt;
+
+      document.getElementById('full-price').textContent = amount.toLocaleString();
+      document.getElementById('discount-percent').textContent = currentRestaurant.discount;
+      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
+      document.getElementById('net-price').textContent = netPrice.toLocaleString();
+      document.getElementById('discount-code').textContent = `SCGDEAL${Math.floor(Math.random() * 900) + 100}`;
+
+      const now = new Date();
+      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      expenseSection.classList.add('hidden');
+      codeSection.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    closeX.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    let selectedRating = 0;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('text-yellow-500', 'text-gray-300');
+                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+            });
+        });
+    });
+
+    document.getElementById('submit-review').addEventListener('click', () => {
+      const comment = document.getElementById('comment-input').value;
+      if (selectedRating === 0) {
+          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
+          return;
+      }
+      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
+      // Here you would typically send the review to a server
+      document.getElementById('comment-input').value = '';
+      selectedRating = 0;
+      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
+    });
+
+    // --- Initial Page Load ---
+    const restaurantId = getRestaurantIdFromUrl();
+    const dataToDisplay = allRestaurantsData.find(r => r.id === restaurantId) || allRestaurantsData[0]; // Default to first if no ID
+    
+    if (dataToDisplay) {
+        populatePage(dataToDisplay);
+    } else {
+        contentPlaceholder.innerHTML = `<h1 class="text-2xl text-center text-red-500 mt-10">ไม่พบข้อมูลร้านอาหาร</h1>`;
+    }
+
+  </script>
+</body>
+</html>
