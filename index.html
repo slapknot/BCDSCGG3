@@ -199,6 +199,21 @@
       padding: 6px 12px; font-size: 14px; font-weight: 700;
       border-radius: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       animation: pulse 1.5s infinite;
+      z-index: 1;
+    }
+    .badge-ad {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 1;
     }
     @keyframes pulse {
       0% { transform: scale(1); }
@@ -331,18 +346,18 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- DATA with Image URLs ---
+  // --- DATA with Image URLs and AD property ---
   const restaurantData = [
-    {id: 1, name:'ร้านบ้านสวนออร์แกนิก',discount:10,greenScore:92,rating:4.7,province:'ชลบุรี',district:'ศรีราชา',type:'buffet',price:450, image: 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 2, name:'ส้มตำแม่บุญช่วย',discount:15,greenScore:75,rating:4.3,province:'ขอนแก่น',district:'เมืองขอนแก่น',type:'asian',price:129, image: 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 3, name:'SteakHouse Prime',discount:20,greenScore:60,rating:4.8,province:'กรุงเทพฯ',district:'วัฒนา',type:'western',price:1299, image: 'https://images.pexels.com/photos/1251208/pexels-photo-1251208.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 4, name:'ก๋วยเตี๋ยวเรือนายโอ',discount:5,greenScore:55,rating:4.2,province:'นครราชสีมา',district:'ปากช่อง',type:'asian',price:89, image: 'https://cms.dmpcdn.com/food/2020/06/08/a511be30-a951-11ea-9cca-0796b916f819_original.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 5, name:'La Pizzeria Italiano',discount:25,greenScore:80,rating:4.6,province:'เชียงใหม่',district:'เมืองเชียงใหม่',type:'western',price:550, image: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 6, name:'Buffet ซีฟู้ดเดลิเวอรี่',discount:30,greenScore:95,rating:4.9,province:'ภูเก็ต',district:'ราไวย์',type:'buffet',price:799, image: 'https://s359.kapook.com/rq/600/auto/50/pagebuilder/30a38cbd-9a54-4eb9-b39c-b4386d299cc2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 7, name:'ร้านข้าวแกงปักษ์ใต้',discount:12,greenScore:65,rating:4.1,province:'นครศรีธรรมราช',district:'เมืองนครศรีธรรมราษฎร์',type:'asian',price:159, image: 'https://mpics-cdn-acc.mgronline.com/pics/Images/562000007549101.JPEG?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 8, name:'Sushi Master',discount:18,greenScore:85,rating:4.5,province:'กรุงเทพฯ',district:'บางรัก',type:'asian',price:899, image: 'https://www.kikkoman.eu/fileadmin/_processed_/4/2/csm_sushi-kakkoii_eb92ad14ee.webp?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 9, name:'Curry & Rice',discount:22,greenScore:70,rating:4.4,province:'สุพรรณบุรี',district:'อู่ทอง',type:'asian',price:199, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm9O98aT5wpQDEu5vNOgg0DeUIYK_5vXtvIw&s?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 10, name:'Burger Town',discount:8,greenScore:50,rating:4.0,province:'ชุมพร',district:'เมืองชุมพร',type:'western',price:299, image: 'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+    {id: 1, name:'ร้านบ้านสวนออร์แกนิก',discount:10,greenScore:92,rating:4.7,province:'ชลบุรี',district:'ศรีราชา',type:'buffet',price:450, image: 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 2, name:'ส้มตำแม่บุญช่วย',discount:15,greenScore:75,rating:4.3,province:'ขอนแก่น',district:'เมืองขอนแก่น',type:'asian',price:129, image: 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 3, name:'SteakHouse Prime',discount:20,greenScore:60,rating:4.8,province:'กรุงเทพฯ',district:'วัฒนา',type:'western',price:1299, image: 'https://images.pexels.com/photos/1251208/pexels-photo-1251208.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: true},
+    {id: 4, name:'ก๋วยเตี๋ยวเรือนายโอ',discount:5,greenScore:55,rating:4.2,province:'นครราชสีมา',district:'ปากช่อง',type:'asian',price:89, image: 'https://cms.dmpcdn.com/food/2020/06/08/a511be30-a951-11ea-9cca-0796b916f819_original.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 5, name:'La Pizzeria Italiano',discount:25,greenScore:80,rating:4.6,province:'เชียงใหม่',district:'เมืองเชียงใหม่',type:'western',price:550, image: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 6, name:'Buffet ซีฟู้ดเดลิเวอรี่',discount:30,greenScore:95,rating:4.9,province:'ภูเก็ต',district:'ราไวย์',type:'buffet',price:799, image: 'https://s359.kapook.com/rq/600/auto/50/pagebuilder/30a38cbd-9a54-4eb9-b39c-b4386d299cc2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 7, name:'ร้านข้าวแกงปักษ์ใต้',discount:12,greenScore:65,rating:4.1,province:'นครศรีธรรมราช',district:'เมืองนครศรีธรรมราษฎร์',type:'asian',price:159, image: 'https://mpics-cdn-acc.mgronline.com/pics/Images/562000007549101.JPEG?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 8, name:'Sushi Master',discount:18,greenScore:85,rating:4.5,province:'กรุงเทพฯ',district:'บางรัก',type:'asian',price:899, image: 'https://www.kikkoman.eu/fileadmin/_processed_/4/2/csm_sushi-kakkoii_eb92ad14ee.webp?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: true},
+    {id: 9, name:'Curry & Rice',discount:22,greenScore:70,rating:4.4,province:'สุพรรณบุรี',district:'อู่ทอง',type:'asian',price:199, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm9O98aT5wpQDEu5vNOgg0DeUIYK_5vXtvIw&s?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false},
+    {id: 10, name:'Burger Town',discount:8,greenScore:50,rating:4.0,province:'ชุมพร',district:'เมืองชุมพร',type:'western',price:299, image: 'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false}
   ];
   const hotelData = [
     {id: 1, name: 'Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
@@ -446,6 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.innerHTML = `
       <div class="card-image">
         <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Error';">
+        ${item.isAd ? '<div class="badge-ad">Ad</div>' : ''}
         ${item.discount ? `<div class="badge-discount">-${item.discount}%</div>` : ''}
       </div>
       <div class="item-info">
@@ -471,6 +487,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = page.querySelector('.reset-btn');
     const selectedNameEl = page.querySelector('#selected-name-restaurant');
     let randomInterval = null;
+    
+    let adRestaurants = [];
+    let featuredGreenRestaurant = [];
+    let baseRestaurantList = [];
+
+    // --- Initial Data Processing for Ads and Green Score ---
+    function setupInitialLists() {
+        const allRestaurants = [...restaurantData];
+        
+        // 1. Separate Ads
+        adRestaurants = allRestaurants.filter(r => r.isAd);
+        const nonAdRestaurants = allRestaurants.filter(r => !r.isAd);
+
+        // 2. Identify and select featured green restaurant
+        const top20PercentCount = Math.ceil(nonAdRestaurants.length * 0.2);
+        const topGreenCandidates = [...nonAdRestaurants].sort((a, b) => b.greenScore - a.greenScore).slice(0, top20PercentCount);
+        
+        const featuredCount = Math.ceil(nonAdRestaurants.length * 0.1);
+        
+        // Shuffle candidates and pick the featured ones
+        for (let i = topGreenCandidates.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [topGreenCandidates[i], topGreenCandidates[j]] = [topGreenCandidates[j], topGreenCandidates[i]];
+        }
+        featuredGreenRestaurant = topGreenCandidates.slice(0, featuredCount);
+
+        // 3. Create the base list for filtering/sorting
+        const featuredIds = featuredGreenRestaurant.map(r => r.id);
+        baseRestaurantList = nonAdRestaurants.filter(r => !featuredIds.includes(r.id));
+    }
+
 
     populateFilter(provinceFilter, restaurantData, 'province');
 
@@ -479,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedNameEl.textContent = '';
 
       const term = searchInput.value.trim().toLowerCase();
-      let data = restaurantData.filter(r => {
+      let filteredList = baseRestaurantList.filter(r => {
         if (term && !r.name.toLowerCase().includes(term)) return false;
         if (provinceFilter.value && r.province !== provinceFilter.value) return false;
         if (districtFilter.value && r.district !== districtFilter.value) return false;
@@ -494,18 +541,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (sortOrder.value) {
         const [key, dir] = sortOrder.value.split('_');
-        data.sort((a,b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
+        filteredList.sort((a,b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
       }
-      render(data);
+      render(filteredList);
     }
     
-    function render(data) {
+    function render(filteredData) {
       listEl.innerHTML = '';
-      if (data.length === 0) {
+      
+      const fullList = [...adRestaurants, ...featuredGreenRestaurant, ...filteredData];
+
+      if (fullList.length === 0) {
         listEl.innerHTML = '<div class="message-box">ไม่พบร้านอาหารที่ตรงกับเงื่อนไข</div>';
         return;
       }
-      data.forEach(r => listEl.appendChild(createItemCard(r)));
+      fullList.forEach(r => listEl.appendChild(createItemCard(r)));
     }
     
     function updateDistricts() {
@@ -574,6 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
     randomBtn.addEventListener('click', handleRandomClick);
     resetBtn.addEventListener('click', reset);
     
+    setupInitialLists();
     applyFilters();
   })();
 
