@@ -1,0 +1,392 @@
+
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายละเอียดสนามกอล์ฟ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #F7F9F7;
+      --accent-color: #E53935;
+      --text-color: #212529;
+      --light-text: #6c757d;
+      --card-bg: #FFFFFF;
+      --card-radius: 12px;
+    }
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: var(--secondary-color);
+    }
+    .font-sarabun { font-family: 'Sarabun', sans-serif; }
+    .bg-primary { background-color: var(--primary-color); }
+    .text-primary { color: var(--primary-color); }
+    .bg-accent { background-color: var(--accent-color); }
+    .text-accent { color: var(--accent-color); }
+    
+    .modal-fade {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-fade.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #toast-notification {
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(100%);
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  </style>
+</head>
+<body class="font-sarabun relative">
+
+  <!-- Header -->
+  <nav class="bg-white shadow-md sticky top-0 z-20">
+    <div class="container mx-auto px-6 py-3">
+        <a href="index.html" id="back-to-main" class="text-primary font-bold text-xl flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            กลับสู่หน้าแรก
+        </a>
+    </div>
+  </nav>
+
+  <main class="container mx-auto p-4 md:p-6 space-y-8">
+    <!-- Content will be loaded here. Shows a loading message initially. -->
+    <div id="content-placeholder">
+        <h1 class="text-2xl text-center text-gray-500 mt-10">กำลังโหลดข้อมูลสนามกอล์ฟ...</h1>
+    </div>
+    <div id="golf-content" class="hidden space-y-8">
+        <!-- 1. Golf Course Info & Discount -->
+        <section>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 id="golf-name" class="text-3xl font-bold text-primary"></h1>
+                <p id="golf-description" class="text-gray-700 mt-2 max-w-2xl"></p>
+            </div>
+            <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
+                รับโค้ดส่วนลด
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. Main Image -->
+        <div class="relative">
+          <img id="main-image" src="" alt="ภาพสนามกอล์ฟ" class="w-full h-72 object-cover rounded-xl shadow-lg">
+          <span id="image-discount-badge" class="absolute top-4 right-4 bg-accent text-white font-bold px-4 py-2 rounded-full text-lg"></span>
+        </div>
+
+        <!-- 3. Course Highlights -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">ไฮไลท์ของสนาม</h2>
+          <div id="highlight-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Highlights will be injected here by JS -->
+          </div>
+        </section>
+
+        <!-- 4. Reviews -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">คะแนนรีวิว</h2>
+          <div class="flex items-center space-x-2 mb-4">
+            <div id="review-stars-summary" class="flex text-yellow-500 text-2xl"></div>
+            <span id="review-summary-text" class="text-gray-600 ml-2 font-semibold text-lg"></span>
+          </div>
+          <div id="review-list" class="space-y-4">
+            <!-- Reviews will be injected here by JS -->
+          </div>
+        </section>
+        
+        <!-- 5. Map -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
+          <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
+            <!-- Map iframe will be injected here -->
+          </div>
+        </section>
+
+        <!-- Details Column -->
+        <section class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่</h3><p id="address" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">ข้อมูลสนาม</h3><ul id="course-info" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวกหลัก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div>
+                    <h3 class="text-lg font-semibold text-primary">ติดต่อสนามกอล์ฟ</h3>
+                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
+                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Write Review -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+          <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
+          <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
+            <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+          </div>
+          <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
+          <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
+        </section>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="discount-modal" class="modal-fade fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-30">
+    <div class="relative bg-white rounded-xl p-6 shadow-lg w-11/12 max-w-sm text-center transform transition-all scale-95 opacity-0" id="modal-content">
+      <button id="modal-close-x" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">×</button>
+      <div id="expense-section">
+        <h3 class="text-xl font-semibold text-primary mb-4">กรุณากรอกค่าบริการ (Green Fee)</h3>
+        <input id="expense-input" type="number" min="0" placeholder="ยอดรวมค่าบริการ (บาท)" class="w-full border rounded-lg p-2 mb-4 text-center text-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+        <button id="confirm-expense-btn" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg w-full hover:bg-blue-700 transition">ยืนยันยอด</button>
+      </div>
+      <div id="code-section" class="hidden">
+        <p class="text-gray-700 mb-2">ราคาเต็ม: <span id="full-price" class="font-medium"></span> บาท</p>
+        <p class="text-gray-700 mb-2">ส่วนลด (<span id="discount-percent" class="font-medium"></span>%): <span id="discount-amount" class="font-medium text-accent"></span> บาท</p>
+        <p class="text-gray-700 mb-4">ราคาสุทธิ: <span id="net-price" class="font-bold text-primary text-xl"></span> บาท</p>
+        <h3 class="text-lg font-semibold text-primary mb-2">โค้ดส่วนลดของคุณ</h3>
+        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <p id="discount-code" class="text-3xl font-bold text-accent tracking-widest"></p>
+        </div>
+        <p class="text-gray-600 my-4">หมดอายุ: <span id="expiry-date" class="font-medium"></span></p>
+        <button id="close-modal" class="bg-primary text-white px-6 py-2 rounded-lg w-full hover:bg-green-800 transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 bg-primary text-white px-6 py-3 rounded-lg shadow-xl opacity-0">
+    <p id="toast-message"></p>
+  </div>
+
+  <script>
+    // --- Database of all golf courses ---
+    const allGolfData = [
+        {
+            id: 1, name: "Siam Country Club", description: "สนามกอล์ฟระดับโลกในพัทยา พร้อมด้วยเลย์เอาต์ที่ท้าทายและสวยงาม เป็นที่รู้จักจากการจัดทัวร์นาเมนต์ระดับนานาชาติ", mainImage: "https://images.pexels.com/photos/164287/pexels-photo-164287.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 10, rating: 4.9,
+            highlights: [
+                { name: "Old Course", image: "https://www.siamcountryclub.com/oldcourse/wp-content/uploads/sites/2/2021/01/8.jpg", description: "สนามดั้งเดิมที่มีชื่อเสียงระดับโลก" },
+                { name: "Plantation Course", image: "https://www.siamcountryclub.com/plantation/wp-content/uploads/sites/3/2021/01/Plantation-Course-Hole-5-1.jpg", description: "สนามที่ท้าทายด้วยกรีนและบังเกอร์" },
+                { name: "Club House", image: "https://www.siamcountryclub.com/oldcourse/wp-content/uploads/sites/2/2021/01/1-1.jpg", description: "คลับเฮาส์หรูพร้อมสิ่งอำนวยความสะดวกครบครัน" }
+            ],
+            reviews: { average: 4.9, total: 120, items: [{ user: "โปรอาร์ม", date: "9 ก.ค. 2025", rating: 5, comment: "สนามดีมากครับ กรีนเร็วท้าทาย" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0000000000005!2d100.992541315359!3d13.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA3JzI0LjQiTiAxMDDCsDU5JzMzLjIiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "50 หมู่ 9 ต.โป่ง อ.บางละมุง จ.ชลบุรี 20150", courseInfo: ["18 หลุม x 4 สนาม", "ออกแบบโดย: I. Izumi, Schmidt-Curley", "พาร์ 72"], amenities: ["คลับเฮาส์หรู", "โปรช็อป", "ห้องอาหาร", "สนามไดร์ฟ"], contact: { tel: "+6638909700", facebook: "https://facebook.com/SiamCountryClub/", instagram: "https://instagram.com/siamcountryclub/" }
+        },
+        {
+            id: 2, name: "Alpine Golf Club", description: "หนึ่งในสนามกอล์ฟที่ดีที่สุดในประเทศไทย ออกแบบโดย Ronald M. Garl มีเลย์เอาต์ที่สวยงามและท้าทายความสามารถของนักกอล์ฟทุกระดับ", mainImage: "https://images.pexels.com/photos/129441/pexels-photo-129441.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 15, rating: 4.8,
+            highlights: [
+                { name: "Signature Hole 7", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-10.jpg", description: "พาร์ 3 ที่มีกรีนเป็นเกาะ" },
+                { name: "Fairway", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-02.jpg", description: "แฟร์เวย์ที่ท้าทายและสวยงาม" },
+                { name: "Club House", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-12.jpg", description: "คลับเฮาส์พร้อมวิวสนามแบบพาโนรามา" }
+            ],
+            reviews: { average: 4.8, total: 95, items: [{ user: "คุณสุรชัย", date: "22 มิ.ย. 2025", rating: 5, comment: "สนามสวยและดูแลดีมากครับ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.8000000000005!2d100.561000315359!3d13.73333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzYwLjAiTiAxMDDCsDMzJzM5LjYiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "99 หมู่ 9 ถ.คลองหลวง, คลองห้า, อ.คลองหลวง, จ.ปทุมธานี 12120", courseInfo: ["18 หลุม", "ออกแบบโดย: Ronald M. Garl", "พาร์ 72"], amenities: ["แคดดี้มืออาชีพ", "สปาและนวดแผนไทย", "ห้องอาหาร"], contact: { tel: "+6625773333", facebook: "https://facebook.com/alpinegolfclubbangkok/", instagram: "https://instagram.com/alpinegolfclubbkk/" }
+        },
+        {
+            id: 3, name: "Blue Canyon Country Club", description: "สนามกอล์ฟระดับตำนานในภูเก็ต เคยใช้จัดการแข่งขันระดับโลกมาแล้วหลายรายการ มีให้เลือกเล่นถึง 2 สนาม คือ Canyon Course และ Lakes Course", mainImage: "https://images.pexels.com/photos/1323416/pexels-photo-1323416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 5, rating: 4.7,
+            highlights: [
+                { name: "Canyon Course", image: "https://www.bluecanyonphuket.com/images/golf/canyon/gallery/1.jpg", description: "สนามที่ท้าทายและมีชื่อเสียง" },
+                { name: "Lakes Course", image: "https://www.bluecanyonphuket.com/images/golf/lakes/gallery/1.jpg", description: "สนามที่สวยงามด้วยทะเลสาบ" },
+                { name: "Pro Shop", image: "https://www.bluecanyonphuket.com/images/golf/pro-shop/1.jpg", description: "เลือกซื้ออุปกรณ์กอล์ฟชั้นนำ" }
+            ],
+            reviews: { average: 4.7, total: 150, items: [{ user: "Mr. Tanaka", date: "1 ก.ค. 2025", rating: 4, comment: "Very challenging course, beautiful scenery." }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0000000000005!2d98.338000315359!3d7.80000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNDgnMDAuMCJOIDk4wrAyMCcxNi44IkU!5e0!3m2!1sen!2sth!4v1651234567890', address: "165 หมู่ 1 ถ.เทพกระษัตรี ต.ไม้ขาว อ.ถลาง จ.ภูเก็ต 83110", courseInfo: ["2 สนาม 18 หลุม", "ออกแบบโดย: Yoshikazu Kato", "พาร์ 72"], amenities: ["โรงแรมในโครงการ", "ห้องอาหารนานาชาติ", "สปา"], contact: { tel: "+6676328088", facebook: "https://facebook.com/BlueCanyonCountryClub/", instagram: "https://instagram.com/bluecanyoncountryclub/" }
+        }
+    ];
+
+    // --- DOM Elements ---
+    const contentPlaceholder = document.getElementById('content-placeholder');
+    const golfContent = document.getElementById('golf-content');
+    const discountBtn = document.getElementById('discount-btn');
+    const modal = document.getElementById('discount-modal');
+    const modalContent = document.getElementById('modal-content');
+    const expenseSection = document.getElementById('expense-section');
+    const confirmBtn = document.getElementById('confirm-expense-btn');
+    const expenseInput = document.getElementById('expense-input');
+    const codeSection = document.getElementById('code-section');
+    const closeBtn = document.getElementById('close-modal');
+    const closeX = document.getElementById('modal-close-x');
+    const stars = document.querySelectorAll('#star-rating-input span');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    let currentGolfCourse = null;
+
+    // --- Functions ---
+    
+    function populatePage(data) {
+        currentGolfCourse = data;
+        document.title = `${data.name} - รายละเอียดสนามกอล์ฟ`;
+        document.getElementById('golf-name').textContent = data.name;
+        document.getElementById('golf-description').textContent = data.description;
+        document.getElementById('main-image').src = data.mainImage;
+        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
+
+        // Highlights
+        const highlightGrid = document.getElementById('highlight-grid');
+        highlightGrid.innerHTML = '';
+        data.highlights.forEach(item => {
+            highlightGrid.innerHTML += `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover" onerror="this.style.display='none'">
+                  <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
+                    <p class="text-gray-500 text-sm">${item.description}</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        // Reviews
+        const reviewStarsSummary = document.getElementById('review-stars-summary');
+        reviewStarsSummary.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            reviewStarsSummary.innerHTML += `<span class="${i <= data.rating ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+        }
+        document.getElementById('review-summary-text').textContent = `${data.rating} / 5.0 (${data.reviews.total} รีวิว)`;
+        
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+        data.reviews.items.forEach(review => {
+            reviewList.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow">
+                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
+                  <p class="text-gray-800">“${review.comment}”</p>
+                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
+                </div>
+            `;
+        });
+
+        // Map
+        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
+        
+        // Details Column
+        document.getElementById('address').textContent = data.address;
+        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
+        document.getElementById('course-info').innerHTML = data.courseInfo.map(p => `<li>${p}</li>`).join('');
+        
+        // Contact
+        const telLink = document.getElementById('contact-tel');
+        if (data.contact && data.contact.tel) {
+            telLink.href = `tel:${data.contact.tel}`;
+            telLink.textContent = data.contact.tel;
+        }
+        if (data.contact) {
+            document.getElementById('social-media-links').innerHTML = `
+                <a href="${data.contact.facebook || '#'}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
+                <a href="${data.contact.instagram || '#'}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
+            `;
+        }
+
+        // Show content
+        contentPlaceholder.classList.add('hidden');
+        golfContent.classList.remove('hidden');
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openModal() {
+        if (!currentGolfCourse) return;
+        expenseInput.value = '';
+        codeSection.classList.add('hidden');
+        expenseSection.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function getGolfIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return parseInt(params.get('id'));
+    }
+
+    // --- Event Listeners ---
+    discountBtn.addEventListener('click', openModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const amount = parseFloat(expenseInput.value) || 0;
+      if (amount <= 0) {
+          showToast("กรุณากรอกยอดค่าใช้จ่ายที่ถูกต้อง");
+          return;
+      }
+      const discountAmt = Math.round(amount * currentGolfCourse.discount / 100);
+      const netPrice = amount - discountAmt;
+
+      document.getElementById('full-price').textContent = amount.toLocaleString();
+      document.getElementById('discount-percent').textContent = currentGolfCourse.discount;
+      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
+      document.getElementById('net-price').textContent = netPrice.toLocaleString();
+      document.getElementById('discount-code').textContent = `SCGGOLF${Math.floor(Math.random() * 900) + 100}`;
+
+      const now = new Date();
+      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      expenseSection.classList.add('hidden');
+      codeSection.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    closeX.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    let selectedRating = 0;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('text-yellow-500', 'text-gray-300');
+                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+            });
+        });
+    });
+
+    document.getElementById('submit-review').addEventListener('click', () => {
+      const comment = document.getElementById('comment-input').value;
+      if (selectedRating === 0) {
+          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
+          return;
+      }
+      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
+      // Here you would typically send the review to a server
+      document.getElementById('comment-input').value = '';
+      selectedRating = 0;
+      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
+    });
+
+    // --- Initial Page Load ---
+    const golfId = getGolfIdFromUrl();
+    const dataToDisplay = allGolfData.find(r => r.id === golfId) || allGolfData[0];
+    
+    if (dataToDisplay) {
+        populatePage(dataToDisplay);
+    } else {
+        contentPlaceholder.innerHTML = `<h1 class="text-2xl text-center text-red-500 mt-10">ไม่พบข้อมูลสนามกอล์ฟ</h1>`;
+    }
+
+  </script>
+</body>
+</html>

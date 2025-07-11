@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายละเอียดโรงแรม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #F7F9F7;
+      --accent-color: #E53935;
+      --text-color: #212529;
+      --light-text: #6c757d;
+      --card-bg: #FFFFFF;
+      --card-radius: 12px;
+    }
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: var(--secondary-color);
+    }
+    .font-sarabun { font-family: 'Sarabun', sans-serif; }
+    .bg-primary { background-color: var(--primary-color); }
+    .text-primary { color: var(--primary-color); }
+    .bg-accent { background-color: var(--accent-color); }
+    .text-accent { color: var(--accent-color); }
+    
+    .modal-fade {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-fade.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #toast-notification {
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(100%);
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  </style>
+</head>
+<body class="font-sarabun relative">
+
+  <!-- Header -->
+  <nav class="bg-white shadow-md sticky top-0 z-20">
+    <div class="container mx-auto px-6 py-3">
+        <!-- FIXED: Changed href="#" to "index.html" to link back to the main page. -->
+        <a href="index.html" id="back-to-main" class="text-primary font-bold text-xl flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            กลับสู่หน้าแรก
+        </a>
+    </div>
+  </nav>
+
+  <main class="container mx-auto p-4 md:p-6 space-y-8">
+    <!-- Content will be loaded here. Shows a loading message initially. -->
+    <div id="content-placeholder">
+        <h1 class="text-2xl text-center text-gray-500 mt-10">กำลังโหลดข้อมูลโรงแรม...</h1>
+    </div>
+    <div id="hotel-content" class="hidden space-y-8">
+        <!-- 1. Hotel Info & Discount -->
+        <section>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 id="hotel-name" class="text-3xl font-bold text-primary"></h1>
+                <p id="hotel-description" class="text-gray-700 mt-2 max-w-2xl"></p>
+            </div>
+            <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
+                รับโค้ดส่วนลด
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. Main Image -->
+        <div class="relative">
+          <img id="main-image" src="" alt="ภาพโรงแรม" class="w-full h-72 object-cover rounded-xl shadow-lg">
+          <span id="image-discount-badge" class="absolute top-4 right-4 bg-accent text-white font-bold px-4 py-2 rounded-full text-lg"></span>
+        </div>
+
+        <!-- 3. Room Types -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">ประเภทห้องพัก</h2>
+          <div id="room-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Room types will be injected here by JS -->
+          </div>
+        </section>
+
+        <!-- 4. Reviews -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-4">คะแนนรีวิว</h2>
+          <div class="flex items-center space-x-2 mb-4">
+            <div id="review-stars-summary" class="flex text-yellow-500 text-2xl"></div>
+            <span id="review-summary-text" class="text-gray-600 ml-2 font-semibold text-lg"></span>
+          </div>
+          <div id="review-list" class="space-y-4">
+            <!-- Reviews will be injected here by JS -->
+          </div>
+        </section>
+        
+        <!-- 5. Map -->
+        <section>
+          <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
+          <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
+            <!-- Map iframe will be injected here -->
+          </div>
+        </section>
+
+        <!-- Details Column -->
+        <section class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่</h3><p id="address" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">นโยบายการเข้าพัก</h3><ul id="policies" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวกหลัก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div>
+                    <h3 class="text-lg font-semibold text-primary">ติดต่อโรงแรม</h3>
+                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
+                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Write Review -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+          <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
+          <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
+            <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+            <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+          </div>
+          <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
+          <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
+        </section>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="discount-modal" class="modal-fade fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-30">
+    <div class="relative bg-white rounded-xl p-6 shadow-lg w-11/12 max-w-sm text-center transform transition-all scale-95 opacity-0" id="modal-content">
+      <button id="modal-close-x" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">×</button>
+      <div id="expense-section">
+        <h3 class="text-xl font-semibold text-primary mb-4">กรุณากรอกราคาห้องพัก</h3>
+        <input id="expense-input" type="number" min="0" placeholder="ยอดรวมค่าห้องพัก (บาท)" class="w-full border rounded-lg p-2 mb-4 text-center text-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+        <button id="confirm-expense-btn" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg w-full hover:bg-blue-700 transition">ยืนยันยอด</button>
+      </div>
+      <div id="code-section" class="hidden">
+        <p class="text-gray-700 mb-2">ราคาเต็ม: <span id="full-price" class="font-medium"></span> บาท</p>
+        <p class="text-gray-700 mb-2">ส่วนลด (<span id="discount-percent" class="font-medium"></span>%): <span id="discount-amount" class="font-medium text-accent"></span> บาท</p>
+        <p class="text-gray-700 mb-4">ราคาสุทธิ: <span id="net-price" class="font-bold text-primary text-xl"></span> บาท</p>
+        <h3 class="text-lg font-semibold text-primary mb-2">โค้ดส่วนลดของคุณ</h3>
+        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <p id="discount-code" class="text-3xl font-bold text-accent tracking-widest"></p>
+        </div>
+        <p class="text-gray-600 my-4">หมดอายุ: <span id="expiry-date" class="font-medium"></span></p>
+        <button id="close-modal" class="bg-primary text-white px-6 py-2 rounded-lg w-full hover:bg-green-800 transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 bg-primary text-white px-6 py-3 rounded-lg shadow-xl opacity-0">
+    <p id="toast-message"></p>
+  </div>
+
+  <script>
+    // --- Database of all hotels ---
+    const allHotelsData = [
+        {
+            id: 1, name: "SCG Grand Hotel", description: "โรงแรมหรูใจกลางกรุงเทพฯ มอบประสบการณ์การพักผ่อนเหนือระดับ พร้อมการบริการที่เป็นเลิศและสิ่งอำนวยความสะดวกครบครัน", mainImage: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 15, rating: 5,
+            roomTypes: [
+                { name: "Deluxe Room", image: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 5500, features: ["เตียงคิงไซส์", "วิวเมือง", "อ่างอาบน้ำ"] },
+                { name: "Executive Suite", image: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 8500, features: ["ห้องนั่งเล่นแยก", "Executive Lounge Access"] }
+            ],
+            reviews: { average: 4.8, total: 250, items: [{ user: "คุณวิชัย", date: "8 ก.ค. 2025", rating: 5, comment: "บริการดีเยี่ยม ห้องพักสวยงามและสะอาดมากครับ ประทับใจ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.456611910695!2d100.5303533153592!3d13.74589999035181!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29ed80f033c5d%3A0x2de1454de26685a4!2sSiam%20Paragon!5e0!3m2!1sen!2sth!4v1651234567890', address: "991 ถนนพระราม 1, ปทุมวัน, กรุงเทพฯ 10330", amenities: ["สระว่ายน้ำ", "สปา", "ฟิตเนส", "ห้องอาหาร", "รูมเซอร์วิส 24 ชม."], policies: ["เช็คอิน: 15:00", "เช็คเอาท์: 12:00", "ห้ามนำสัตว์เลี้ยงเข้าพัก"], contact: { tel: "+6621234567", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg" }
+        },
+        {
+            id: 2, name: "Chiang Mai Mountain Retreat", description: "หลีกหนีความวุ่นวายมาพักผ่อนท่ามกลางขุนเขาและธรรมชาติอันเงียบสงบที่เชียงใหม่ สัมผัสอากาศบริสุทธิ์และวิวทิวทัศน์ที่สวยงาม", mainImage: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 20, rating: 4,
+            roomTypes: [
+                { name: "Mountain View", image: "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 3800, features: ["ระเบียงส่วนตัว", "วิวภูเขา", "รวมอาหารเช้า"] },
+                { name: "Garden Villa", image: "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 5200, features: ["วิลล่าส่วนตัว", "สวนหย่อม", "ใกล้สระว่ายน้ำ"] }
+            ],
+            reviews: { average: 4.6, total: 180, items: [{ user: "คุณสมศรี", date: "15 มิ.ย. 2025", rating: 5, comment: "บรรยากาศดีมากค่ะ เงียบสงบ เหมาะกับการพักผ่อนจริงๆ" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3777.0000000000005!2d98.985000315359!3d18.78333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDQ3JzAwLjAiTiA5OMKwNTknMDYuMCJF!5e0!3m2!1sen!2sth!4v1651234567890', address: "123 หมู่ 1 ต.แม่แรม อ.แม่ริม จ.เชียงใหม่ 50180", amenities: ["สระว่ายน้ำวิวภูเขา", "ห้องอาหาร", "Wi-Fi ฟรี", "บริการทัวร์"], policies: ["เช็คอิน: 14:00", "เช็คเอาท์: 12:00"], contact: { tel: "+6653123456", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg" }
+        },
+        {
+            id: 3, name: "Phuket Beachside Resort", description: "รีสอร์ทติดชายหาดส่วนตัวในภูเก็ต เพลิดเพลินกับน้ำทะเลใส หาดทรายขาว และกิจกรรมทางน้ำมากมาย", mainImage: "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 10, rating: 4,
+            roomTypes: [
+                { name: "Sea View", image: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 4500, features: ["วิวทะเล", "ระเบียงส่วนตัว", "มินิบาร์"] },
+                { name: "Pool Access", image: "https://images.pexels.com/photos/2029722/pexels-photo-2029722.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 6200, features: ["เชื่อมต่อสระว่ายน้ำจากห้องพัก", "เตียงอาบแดดส่วนตัว"] }
+            ],
+            reviews: { average: 4.5, total: 312, items: [{ user: "ครอบครัวสุขสันต์", date: "20 ก.ค. 2025", rating: 4, comment: "เด็กๆชอบสระว่ายน้ำมากค่ะ ติดหาดเลยสะดวกดี" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0000000000005!2d98.338000315359!3d7.80000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNDgnMDAuMCJOIDk4wrAyMCcxNi44IkU!5e0!3m2!1sen!2sth!4v1651234567890', address: "45/6 หาดกะรน ต.กะรน อ.เมือง จ.ภูเก็ต 83100", amenities: ["สระว่ายน้ำ 3 สระ", "บาร์ริมสระ", "คิดส์คลับ", "กีฬาทางน้ำ"], policies: ["เช็คอิน: 15:00", "เช็คเอาท์: 11:00"], contact: { tel: "+6676123456", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg" }
+        }
+    ];
+
+    // --- DOM Elements ---
+    const contentPlaceholder = document.getElementById('content-placeholder');
+    const hotelContent = document.getElementById('hotel-content');
+    const discountBtn = document.getElementById('discount-btn');
+    const modal = document.getElementById('discount-modal');
+    const modalContent = document.getElementById('modal-content');
+    const expenseSection = document.getElementById('expense-section');
+    const confirmBtn = document.getElementById('confirm-expense-btn');
+    const expenseInput = document.getElementById('expense-input');
+    const codeSection = document.getElementById('code-section');
+    const closeBtn = document.getElementById('close-modal');
+    const closeX = document.getElementById('modal-close-x');
+    const stars = document.querySelectorAll('#star-rating-input span');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    let currentHotel = null;
+
+    // --- Functions ---
+    
+    function populatePage(data) {
+        currentHotel = data;
+        document.title = `${data.name} - รายละเอียดโรงแรม`;
+        document.getElementById('hotel-name').textContent = data.name;
+        document.getElementById('hotel-description').textContent = data.description;
+        document.getElementById('main-image').src = data.mainImage;
+        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
+
+        // Room Types
+        const roomGrid = document.getElementById('room-grid');
+        roomGrid.innerHTML = '';
+        data.roomTypes.forEach(room => {
+            roomGrid.innerHTML += `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img src="${room.image}" alt="${room.name}" class="w-full h-48 object-cover" onerror="this.style.display='none'">
+                  <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">${room.name}</h3>
+                    <p class="text-gray-500 text-sm">${room.features.join(', ')}</p>
+                    <p class="text-primary mt-2 font-bold text-lg">${room.price.toLocaleString()} บาท/คืน</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        // Reviews
+        const reviewStarsSummary = document.getElementById('review-stars-summary');
+        reviewStarsSummary.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            reviewStarsSummary.innerHTML += `<span class="${i <= data.rating ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+        }
+        document.getElementById('review-summary-text').textContent = `${data.rating}.0 / 5.0 (${data.reviews.total} รีวิว)`;
+        
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+        data.reviews.items.forEach(review => {
+            reviewList.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow">
+                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
+                  <p class="text-gray-800">“${review.comment}”</p>
+                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
+                </div>
+            `;
+        });
+
+        // Map
+        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
+        
+        // Details Column
+        document.getElementById('address').textContent = data.address;
+        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
+        document.getElementById('policies').innerHTML = data.policies.map(p => `<li>${p}</li>`).join('');
+        
+        // Contact
+        const telLink = document.getElementById('contact-tel');
+        if (data.contact && data.contact.tel) {
+            telLink.href = `tel:${data.contact.tel}`;
+            telLink.textContent = data.contact.tel;
+        }
+        if (data.contact) {
+            document.getElementById('social-media-links').innerHTML = `
+                <a href="${data.contact.facebook || '#'}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
+                <a href="${data.contact.instagram || '#'}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
+            `;
+        }
+
+        // Show content
+        contentPlaceholder.classList.add('hidden');
+        hotelContent.classList.remove('hidden');
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openModal() {
+        if (!currentHotel) return;
+        expenseInput.value = '';
+        codeSection.classList.add('hidden');
+        expenseSection.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function getHotelIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return parseInt(params.get('id'));
+    }
+
+    // --- Event Listeners ---
+    discountBtn.addEventListener('click', openModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const amount = parseFloat(expenseInput.value) || 0;
+      if (amount <= 0) {
+          showToast("กรุณากรอกยอดค่าใช้จ่ายที่ถูกต้อง");
+          return;
+      }
+      const discountAmt = Math.round(amount * currentHotel.discount / 100);
+      const netPrice = amount - discountAmt;
+
+      document.getElementById('full-price').textContent = amount.toLocaleString();
+      document.getElementById('discount-percent').textContent = currentHotel.discount;
+      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
+      document.getElementById('net-price').textContent = netPrice.toLocaleString();
+      document.getElementById('discount-code').textContent = `SCGHOTEL${Math.floor(Math.random() * 900) + 100}`;
+
+      const now = new Date();
+      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      expenseSection.classList.add('hidden');
+      codeSection.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    closeX.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    let selectedRating = 0;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('text-yellow-500', 'text-gray-300');
+                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+            });
+        });
+    });
+
+    document.getElementById('submit-review').addEventListener('click', () => {
+      const comment = document.getElementById('comment-input').value;
+      if (selectedRating === 0) {
+          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
+          return;
+      }
+      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
+      // Here you would typically send the review to a server
+      document.getElementById('comment-input').value = '';
+      selectedRating = 0;
+      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
+    });
+
+    // --- Initial Page Load ---
+    const hotelId = getHotelIdFromUrl();
+    const dataToDisplay = allHotelsData.find(r => r.id === hotelId) || allHotelsData[0];
+    
+    if (dataToDisplay) {
+        populatePage(dataToDisplay);
+    } else {
+        contentPlaceholder.innerHTML = `<h1 class="text-2xl text-center text-red-500 mt-10">ไม่พบข้อมูลโรงแรม</h1>`;
+    }
+
+  </script>
+</body>
+</html>
