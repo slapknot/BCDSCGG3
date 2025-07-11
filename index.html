@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCG Deals</title>
+  <title>SCG ONLY</title>
   <style>
     /* --- General Styling & Modern Theme --- */
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap');
@@ -91,7 +91,7 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: hidden; /* Hide overflow from main */
     }
 
     /* --- Page Container --- */
@@ -99,8 +99,8 @@
       display: none; 
       flex-direction: column; 
       height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow-y: auto; /* Allow individual pages to scroll */
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
     }
     .page.active { display: flex; }
 
@@ -255,8 +255,8 @@
 </head>
 <body>
   <header>
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMzIiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMTUuNCAzMC4xYy0xLjgtLjgtMy43LTEuMy01LjgtMS4zLTggMC0xNC41IDYuNS0xNC41IDE0LjVzNi41IDE0LjUgMTQuNSAxNC41YzIuMSAwIDQuMS0uNSA1LjktMS40bC0xLjItMi45Yy0xLjQuOC0zIDEuMi00LjcgMS4yLTUuOSAwLTEwLjctNC44LTEwLjctMTAuN1MxMDQuNyAxMCAxMTAuNSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjgtem0xMS4zIDIuOGMtMS44IDEuOC00LjIgMi44LTYuOCAyLjhzLTUtMS02LjgtMi44Vjg1LjljMS44LTEuOCA0LjItMi44IDYuOC0yLjhzNSAxIDYuOCAyLjh2MTMuM3ptLTIuMy0xMy4zYy0xLjUtMS41LTMuNS0yLjItNS41LTIuMnMtNC4xLjctNS41IDIuMnYxMS45YzEuNSAxLjUgMy41IDIuMiA1LjUgMi4yczQuMS0uNyA1LjUtMi4yVjE5LjZ6TTg1LjggMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNSBjMi4xIDAgNC4xLS41IDUuOS0xLjRsLTEuMi0yLjljLTEuNC44LTMgMS4yLTQuNyAxLjItNS45IDAtMTAuNy00LjgtMTAuNy0xMC4⁷Uzc0LjMgMTAgODAuMSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjh6TTU3IDIyLjNjMCAxLjYtMS4zIDIuOC0yLjggMi44cy0yLjgtMS4zLTIuOC0yLjhWNC4ySDQ4djE4LjJjMCAzLjEgMS41IDUuOSA0LjEgNy40IDAgMCAuMS4xLjEuMWwuMi4xYy4zLjIuNi4zLjkuNVY0LjJoLTMuNFYxLjZoMTB2Mi42SDU3djE4LjF6TTM4LjMgMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNWMzLjIgMCA2LjItMS4xIDguNi0zLjFsLTEuOC0yLjRjLTEuOCA MTEuNS0zLjggMi4xLTYuOCAyLjEtNC4zIDAtNy45LTMuNS03LjktNy45czMuNS03LjkgNy45LTcuOWMyLjkgMCA1LjUgMS42IDYuOCAzLjhsMS44LTIuNGMtMi40LTItNS40LTMuMS04LjYtMy4xeiIvPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yMS4xIDE2YzAgOC44LTEwLjEgMTYtMjEuMSAxNlM0LjIgMjQuOC0xMy45IDE2IDQuMiAwIDIxLjEgMCA0LjIgNy4yIDIxLjEgMTZ6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMy45KSIvPjwvc3ZnPg==" alt="SCG Logo" class="header-logo">
-    <span class="header-title">SCG Deals</span>
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMzIiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMTUuNCAzMC4xYy0xLjgtLjgtMy43LTEuMy01LjgtMS4zLTggMC0xNC41IDYuNS0xNC41IDE0LjVzNi41IDE0LjUgMTQuNSAxNC41YzIuMSAwIDQuMS0uNSA1LjktMS40bC0xLjItMi45Yy0xLjQuOC0zIDEuMi00LjcgMS4yLTUuOSAwLTEwLjctNC44LTEwLjctMTAuN1MxMDQuNyAxMCAxMTAuNSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjgtem0xMS4zIDIuOGMtMS44IDEuOC00LjIgMi44LTYuOCAyLjhzLTUtMS02LjgtMi44Vjg1LjljMS44LTEuOCA0LjItMi44IDYuOC0yLjhzNSAxIDYuOCAyLjh2MTMuM3ptLTIuMy0xMy4zYy0xLjUtMS41LTMuNS0yLjItNS41LTIuMnMtNC4xLjctNS41IDIuMnYxMS45YzEuNSAxLjUgMy41IDIuMiA1LjUgMi4yczQuMS0uNyA1LjUtMi4yVjE5LjZ6TTg1LjggMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNSBjMi4xIDAgNC4xLS41IDUuOS0xLjRsLTEuMi0yLjljLTEuNC44LTMgMS4yLTQuNyAxLjItNS45IDAtMTAuNy00LjgtMTAuNy0xMC4⁷Uzc0LjMgMTAgODAuMSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjh6TTU3IDIyLjNjMCAxLjYtMS4zIDIuOC0yLjggMi44cy0yLjgtMS4zLTIuOC0yLjhWNC4ySDQ4djE4LjJjMCAzLjEgMS41IDUuOSA0LjEgNy40IDAgMCAuMS4xLjEuMWwuMi4xYy4zLjIuNi4zLjkuNVY0LjJoLTMuNFYxLjZoMTB2Mi42SDU3djE4LjF6TTM4LjMgMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNWMzLjIgMCA2LjItMS4xIDguNi0zLjFsLTEuOC0yLjRjLTEuOCA MTEuNS0zLjggMi4xLTYuOCAyLjEtNC4zIDAtNy45LTMuNS03LjktNy45czMuNS03LjkgNy45LTcuOWMyLjkgMCA1LjUgMS42IDYuOCAzLjhsMS44LTIuNGMtMi40LTItNS40LTMuMS04LjYtMy4xeiIvPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yMS4xIDE2YzAgOC44LTEwLjEgMTYtMjEuMSAxNlM0LjIgMjQuOC0xMy45IDE2IDQuMiAwIDIxLjEgMCA0LjIgNy4yIDIxLjEgMTZ6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMy45KSIvPjwvc3ZnPg==" alt="" class="header-logo">
+    <span class="header-title">SCG ONLY</span>
   </header>
 
   <nav class="main-nav">
@@ -345,14 +345,14 @@ document.addEventListener('DOMContentLoaded', () => {
     {id: 10, name:'Burger Town',discount:8,greenScore:50,rating:4.0,province:'ชุมพร',district:'เมืองชุมพร',type:'western',price:299, image: 'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
   ];
   const hotelData = [
-    {name: 'SCG Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {name: 'Chiang Mai Mountain Retreat', province: 'เชียงใหม่', price: 3800, rating: 4, amenities: ['วิวภูเขา', 'รวมอาหารเช้า'], discount: 20, image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {name: 'Phuket Beachside Resort', province: 'ภูเก็ต', price: 4500, rating: 4, amenities: ['ติดชายหาด', 'กีฬาทางน้ำ'], discount: 10, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+    {id: 1, name: 'Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 2, name: 'Chiang Mai Mountain Retreat', province: 'เชียงใหม่', price: 3800, rating: 4, amenities: ['วิวภูเขา', 'รวมอาหารเช้า'], discount: 20, image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 3, name: 'Phuket Beachside Resort', province: 'ภูเก็ต', price: 4500, rating: 4, amenities: ['ติดชายหาด', 'กีฬาทางน้ำ'], discount: 10, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
   ];
   const golfData = [
-    {name: 'Siam Country Club', province: 'ชลบุรี', price: 3500, holes: 18, features: ['สนามระดับโปร', 'คลับเฮาส์'], discount: 10, image: 'https://images.pexels.com/photos/164287/pexels-photo-164287.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {name: 'Alpine Golf Club', province: 'กรุงเทพฯ', price: 4800, holes: 18, features: ['สนามแชมเปี้ยนชิพ', 'ท้าทาย'], discount: 15, image: 'https://images.pexels.com/photos/129441/pexels-photo-129441.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {name: 'Blue Canyon Country Club', province: 'ภูเก็ต', price: 5200, holes: 18, features: ['เคยจัดทัวร์นาเมนต์', 'หรูหรา'], discount: 5, image: 'https://images.pexels.com/photos/1323416/pexels-photo-1323416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+    {id: 1, name: 'Siam Country Club', province: 'ชลบุรี', price: 3500, holes: 18, features: ['สนามระดับโปร', 'คลับเฮาส์'], discount: 10, image: 'https://images.pexels.com/photos/164287/pexels-photo-164287.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 2, name: 'Alpine Golf Club', province: 'กรุงเทพฯ', price: 4800, holes: 18, features: ['สนามแชมเปี้ยนชิพ', 'ท้าทาย'], discount: 15, image: 'https://images.pexels.com/photos/129441/pexels-photo-129441.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 3, name: 'Blue Canyon Country Club', province: 'ภูเก็ต', price: 5200, holes: 18, features: ['เคยจัดทัวร์นาเมนต์', 'หรูหรา'], discount: 5, image: 'https://images.pexels.com/photos/1323416/pexels-photo-1323416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
   ];
 
   // --- PAGE NAVIGATION ---
@@ -389,17 +389,25 @@ document.addEventListener('DOMContentLoaded', () => {
   function createItemCard(item) {
     const link = document.createElement('a');
     let itemType = '';
-    if ('greenScore' in item) itemType = 'restaurant';
-    else if ('amenities' in item) itemType = 'hotel';
-    else if ('holes' in item) itemType = 'golf';
-    
-    // Set the correct link for restaurants, placeholder for others
-    link.href = itemType === 'restaurant' ? `restaurant-detail.html?id=${item.id}` : '#';
+    let linkTarget = '#';
+
+    if ('greenScore' in item) {
+        itemType = 'restaurant';
+        linkTarget = `restaurant-detail.html?id=${item.id}`;
+    } else if ('amenities' in item) {
+        itemType = 'hotel';
+        linkTarget = `hotel-detail.html?id=${item.id}`;
+    } else if ('holes' in item) {
+        itemType = 'golf';
+        linkTarget = `golf-detail.html?id=${item.id}`;
+    }
+
+    link.href = linkTarget;
     link.className = 'item-card-link';
 
     const card = document.createElement('div');
     card.className = 'item-card';
-    const imageSrc = item.image || `https://placehold.co/600x400/E8F5E9/2E7D32?text=${encodeURIComponent(item.name)}&font=noto-sans-thai`;
+    const imageSrc = item.image || `https://placehold.co/600x400/eeeeee/cccccc?text=No+Image`;
 
     let detailsHtml = '';
 
