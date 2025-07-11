@@ -98,63 +98,61 @@
       </div>
     </section>
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Left Column -->
-        <div class="md:col-span-2 space-y-8">
-            <!-- 5. Map -->
-            <section>
-              <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
-              <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
-                <!-- Map iframe will be injected here -->
+    <!-- 5. Map -->
+    <section>
+      <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
+      <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
+        <!-- Map iframe will be injected here -->
+      </div>
+    </section>
+
+    <!-- Details Column (Green Score, Address, etc.) -->
+    <section class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+        <!-- 7. Green Score -->
+        <div>
+          <h2 class="text-2xl font-semibold text-primary mb-4">Green Score</h2>
+          <div class="flex flex-col sm:flex-row items-center sm:space-x-8">
+              <div class="relative w-32 h-32 flex-shrink-0">
+                  <svg class="w-full h-full" viewBox="0 0 36 36">
+                      <path class="text-gray-200" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path id="green-score-circle" class="text-primary" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  </svg>
+                  <div id="green-score-text" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-primary"></div>
               </div>
-            </section>
-            <!-- 13. Write Review -->
-            <section class="bg-white p-6 rounded-xl shadow-lg">
-              <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
-              <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
-                <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-                <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-                <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-                <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-                <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-              </div>
-              <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
-              <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
-            </section>
-        </div>
-        <!-- Right Column -->
-        <div class="space-y-8">
-            <!-- 7. Green Score -->
-            <section class="bg-white p-6 rounded-xl shadow-lg">
-              <h2 class="text-2xl font-semibold text-primary mb-4">Green Score</h2>
-              <div class="flex items-center justify-center">
-                  <div class="relative w-32 h-32">
-                      <svg class="w-full h-full" viewBox="0 0 36 36">
-                          <path class="text-gray-200" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                          <path id="green-score-circle" class="text-primary" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                      </svg>
-                      <div id="green-score-text" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-primary"></div>
-                  </div>
-              </div>
-              <ul id="green-score-details" class="mt-4 space-y-2">
+              <ul id="green-score-details" class="mt-4 sm:mt-0 space-y-2">
                 <!-- Green score details will be injected here -->
               </ul>
-            </section>
-            <!-- Other details -->
-            <section class="bg-white p-6 rounded-xl shadow-lg space-y-4">
-                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่ร้าน</h3><p id="address" class="text-gray-700"></p></div>
-                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
-                <div><h3 class="text-lg font-semibold text-primary">ประเภทอาหาร</h3><p id="cuisine-types" class="text-gray-700"></p></div>
-                <div><h3 class="text-lg font-semibold text-primary">บรรยากาศ</h3><p id="atmosphere" class="text-gray-700"></p></div>
-                <div><h3 class="text-lg font-semibold text-primary">ช่องทางการชำระเงิน</h3><p id="payment-methods" class="text-gray-700"></p></div>
-                <div>
-                    <h3 class="text-lg font-semibold text-primary">ติดต่อเรา</h3>
-                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
-                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
-                </div>
-            </section>
+          </div>
         </div>
-    </div>
+        <hr>
+        <!-- Other details -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div><h3 class="text-lg font-semibold text-primary">ที่อยู่ร้าน</h3><p id="address" class="text-gray-700"></p></div>
+            <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+            <div><h3 class="text-lg font-semibold text-primary">ประเภทอาหาร</h3><p id="cuisine-types" class="text-gray-700"></p></div>
+            <div><h3 class="text-lg font-semibold text-primary">บรรยากาศ</h3><p id="atmosphere" class="text-gray-700"></p></div>
+            <div><h3 class="text-lg font-semibold text-primary">ช่องทางการชำระเงิน</h3><p id="payment-methods" class="text-gray-700"></p></div>
+            <div>
+                <h3 class="text-lg font-semibold text-primary">ติดต่อเรา</h3>
+                <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
+                <div id="social-media-links" class="flex space-x-4 mt-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 13. Write Review -->
+    <section class="bg-white p-6 rounded-xl shadow-lg">
+      <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
+      <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
+        <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+        <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+        <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+        <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+        <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+      </div>
+      <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
+      <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
+    </section>
 
   </main>
 
@@ -196,7 +194,7 @@
         menu: [
             { name: "สลัดสมุนไพรสด", image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 120 },
             { name: "แกงเขียวหวานผักรวม", image: "https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 140 },
-            { name: "ข้าวกล้องผัดกะเพราเต้าหู้", image: "https://images.pexels.com/photos/5835352/pexels-photo-5835352.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 150 },
+            { name: "ข้าวผัดกะเพราเต้าหู้", image: "https://images.pexels.com/photos/5835352/pexels-photo-5835352.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 150 },
             { name: "น้ำสมูทตี้ผักผลไม้รวม", image: "https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 90 }
         ],
         reviews: {
@@ -260,7 +258,7 @@
         data.menu.forEach(item => {
             menuGrid.innerHTML += `
                 <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover">
+                  <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/E8F5E9/333?text=Image+Not+Found';">
                   <div class="p-4">
                     <h3 class="text-lg font-medium text-gray-800">${item.name}</h3>
                     <p class="text-gray-600 mt-1 font-semibold">${item.price} บาท</p>
