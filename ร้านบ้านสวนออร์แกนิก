@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บ้านสวนออร์แกนิก - รายละเอียดร้าน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #F7F9F7;
+      --accent-color: #E53935;
+      --text-color: #212529;
+      --light-text: #6c757d;
+      --card-bg: #FFFFFF;
+      --card-radius: 12px;
+    }
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: var(--secondary-color);
+    }
+    .font-sarabun { font-family: 'Sarabun', sans-serif; }
+    .bg-primary { background-color: var(--primary-color); }
+    .text-primary { color: var(--primary-color); }
+    .bg-accent { background-color: var(--accent-color); }
+    .text-accent { color: var(--accent-color); }
+    
+    /* Modal Animation */
+    .modal-fade {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-fade.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(100%);
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  </style>
+</head>
+<body class="font-sarabun relative">
+
+  <!-- Header -->
+  <nav class="bg-white shadow-md sticky top-0 z-20">
+    <div class="container mx-auto px-6 py-3">
+        <a href="#" class="text-primary font-bold text-xl flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            กลับสู่หน้าแรก
+        </a>
+    </div>
+  </nav>
+
+  <main class="container mx-auto p-4 md:p-6 space-y-8">
+    <!-- 1. Restaurant Info & Discount -->
+    <section>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 id="restaurant-name" class="text-3xl font-bold text-primary"></h1>
+            <p id="restaurant-description" class="text-gray-700 mt-2 max-w-2xl"></p>
+        </div>
+        <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
+            รับโค้ดส่วนลด
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Main Image -->
+    <div class="relative">
+      <img id="main-image" src="" alt="ภาพหน้าร้าน" class="w-full h-72 object-cover rounded-xl shadow-lg">
+      <span id="image-discount-badge" class="absolute top-4 right-4 bg-accent text-white font-bold px-4 py-2 rounded-full text-lg"></span>
+    </div>
+
+    <!-- 3. Recommended Menu -->
+    <section>
+      <h2 class="text-2xl font-semibold text-primary mb-4">เมนูแนะนำ</h2>
+      <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <!-- Menu items will be injected here by JS -->
+      </div>
+    </section>
+
+    <!-- 4. Reviews -->
+    <section>
+      <h2 class="text-2xl font-semibold text-primary mb-4">คะแนนรีวิว</h2>
+      <div class="flex items-center space-x-2 mb-4">
+        <div id="review-stars-summary" class="flex text-yellow-500 text-2xl"></div>
+        <span id="review-summary-text" class="text-gray-600 ml-2 font-semibold text-lg"></span>
+      </div>
+      <div id="review-list" class="space-y-4">
+        <!-- Reviews will be injected here by JS -->
+      </div>
+    </section>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Left Column -->
+        <div class="md:col-span-2 space-y-8">
+            <!-- 5. Map -->
+            <section>
+              <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
+              <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
+                <!-- Map iframe will be injected here -->
+              </div>
+            </section>
+            <!-- 13. Write Review -->
+            <section class="bg-white p-6 rounded-xl shadow-lg">
+              <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
+              <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
+                <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+                <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+                <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+                <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+                <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
+              </div>
+              <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
+              <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
+            </section>
+        </div>
+        <!-- Right Column -->
+        <div class="space-y-8">
+            <!-- 7. Green Score -->
+            <section class="bg-white p-6 rounded-xl shadow-lg">
+              <h2 class="text-2xl font-semibold text-primary mb-4">Green Score</h2>
+              <div class="flex items-center justify-center">
+                  <div class="relative w-32 h-32">
+                      <svg class="w-full h-full" viewBox="0 0 36 36">
+                          <path class="text-gray-200" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                          <path id="green-score-circle" class="text-primary" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      </svg>
+                      <div id="green-score-text" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-primary"></div>
+                  </div>
+              </div>
+              <ul id="green-score-details" class="mt-4 space-y-2">
+                <!-- Green score details will be injected here -->
+              </ul>
+            </section>
+            <!-- Other details -->
+            <section class="bg-white p-6 rounded-xl shadow-lg space-y-4">
+                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่ร้าน</h3><p id="address" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
+                <div><h3 class="text-lg font-semibold text-primary">ประเภทอาหาร</h3><p id="cuisine-types" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">บรรยากาศ</h3><p id="atmosphere" class="text-gray-700"></p></div>
+                <div><h3 class="text-lg font-semibold text-primary">ช่องทางการชำระเงิน</h3><p id="payment-methods" class="text-gray-700"></p></div>
+                <div>
+                    <h3 class="text-lg font-semibold text-primary">ติดต่อเรา</h3>
+                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
+                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+  </main>
+
+  <!-- Modal -->
+  <div id="discount-modal" class="modal-fade fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-30">
+    <div class="relative bg-white rounded-xl p-6 shadow-lg w-11/12 max-w-sm text-center transform transition-all scale-95 opacity-0" id="modal-content">
+      <button id="modal-close-x" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">×</button>
+      <div id="expense-section">
+        <h3 class="text-xl font-semibold text-primary mb-4">กรุณากรอกราคามื้อนี้</h3>
+        <input id="expense-input" type="number" min="0" placeholder="ยอดค่าอาหาร (บาท)" class="w-full border rounded-lg p-2 mb-4 text-center text-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+        <button id="confirm-expense-btn" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg w-full hover:bg-blue-700 transition">ยืนยันยอด</button>
+      </div>
+      <div id="code-section" class="hidden">
+        <p class="text-gray-700 mb-2">ราคาเต็ม: <span id="full-price" class="font-medium"></span> บาท</p>
+        <p class="text-gray-700 mb-2">ส่วนลด (<span id="discount-percent" class="font-medium"></span>%): <span id="discount-amount" class="font-medium text-accent"></span> บาท</p>
+        <p class="text-gray-700 mb-4">ราคาสุทธิ: <span id="net-price" class="font-bold text-primary text-xl"></span> บาท</p>
+        <h3 class="text-lg font-semibold text-primary mb-2">โค้ดส่วนลดของคุณ</h3>
+        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <p id="discount-code" class="text-3xl font-bold text-accent tracking-widest"></p>
+        </div>
+        <p class="text-gray-600 my-4">หมดอายุ: <span id="expiry-date" class="font-medium"></span></p>
+        <button id="close-modal" class="bg-primary text-white px-6 py-2 rounded-lg w-full hover:bg-green-800 transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 bg-primary text-white px-6 py-3 rounded-lg shadow-xl opacity-0">
+    <p id="toast-message"></p>
+  </div>
+
+  <script>
+    // --- Data Object (Simulates fetching from an API) ---
+    const restaurantData = {
+        name: "บ้านสวนออร์แกนิก",
+        description: "ร้านอาหารสไตล์ไทยออร์แกนิก บรรยากาศสวนร่มรื่น โฟกัสเมนูสุขภาพ โดยวัตถุดิบปลอดสารพิษและออร์แกนิก",
+        mainImage: "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        discount: 15,
+        menu: [
+            { name: "สลัดสมุนไพรสด", image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 120 },
+            { name: "แกงเขียวหวานผักรวม", image: "https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 140 },
+            { name: "ข้าวกล้องผัดกะเพราเต้าหู้", image: "https://images.pexels.com/photos/5835352/pexels-photo-5835352.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 150 },
+            { name: "น้ำสมูทตี้ผักผลไม้รวม", image: "https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", price: 90 }
+        ],
+        reviews: {
+            average: 4.3,
+            total: 2,
+            items: [
+                { user: "คุณสมชาย", date: "5 มิ.ย. 2025", rating: 5, comment: "บรรยากาศดีมาก อาหารสดใหม่ รสชาติเยี่ยม!" },
+                { user: "คุณอรทัย", date: "12 พ.ค. 2025", rating: 4, comment: "เมนูหลากหลาย มีตัวเลือกเพื่อสุขภาพเยอะ ชอบมากครับ" }
+            ]
+        },
+        mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.556611910695!2d100.5303533153592!3d13.74589999035181!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29ed80f033c5d%3A0x2de1454de26685a4!2sSiam%20Paragon!5e0!3m2!1sen!2sth!4v1651234567890',
+        address: "123 ซ. สุขใจ 5, บางรัก, กรุงเทพฯ 10500",
+        greenScore: {
+            score: 80,
+            details: [
+                { text: "No waste food", achieved: true },
+                { text: "ใช้ Green packaging", achieved: true },
+                { text: "ใช้พลังงานมีประสิทธิภาพ", achieved: true },
+                { text: "จ้างงานเป็นธรรม", achieved: true },
+                { text: "ส่งเสริมเรื่อง Green", achieved: false }
+            ]
+        },
+        amenities: ["Free Wi-Fi", "ที่จอดรถในพื้นที่", "พื้นที่ Outdoor & Indoor"],
+        cuisine: "ไทย, มังสวิรัติ, ออร์แกนิก",
+        atmosphere: "เหมาะสำหรับครอบครัวและเด็ก พร้อมมุมถ่ายรูปกลางสวน",
+        payment: "เงินสด, บัตรเครดิต, Mobile Banking, PromptPay",
+        contact: {
+            tel: "+66123456789",
+            facebook: "https://facebook.com/scg",
+            instagram: "https://instagram.com/scg",
+            line: "https://line.me/R/ti/p/@scg"
+        }
+    };
+
+    // --- DOM Elements ---
+    const discountBtn = document.getElementById('discount-btn');
+    const modal = document.getElementById('discount-modal');
+    const modalContent = document.getElementById('modal-content');
+    const expenseSection = document.getElementById('expense-section');
+    const confirmBtn = document.getElementById('confirm-expense-btn');
+    const expenseInput = document.getElementById('expense-input');
+    const codeSection = document.getElementById('code-section');
+    const closeBtn = document.getElementById('close-modal');
+    const closeX = document.getElementById('modal-close-x');
+    const stars = document.querySelectorAll('#star-rating-input span');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+
+    // --- Functions ---
+    
+    function populatePage(data) {
+        document.title = `${data.name} - รายละเอียดร้าน`;
+        document.getElementById('restaurant-name').textContent = data.name;
+        document.getElementById('restaurant-description').textContent = data.description;
+        document.getElementById('main-image').src = data.mainImage;
+        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
+
+        // Menu
+        const menuGrid = document.getElementById('menu-grid');
+        menuGrid.innerHTML = '';
+        data.menu.forEach(item => {
+            menuGrid.innerHTML += `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover">
+                  <div class="p-4">
+                    <h3 class="text-lg font-medium text-gray-800">${item.name}</h3>
+                    <p class="text-gray-600 mt-1 font-semibold">${item.price} บาท</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        // Reviews
+        const reviewStarsSummary = document.getElementById('review-stars-summary');
+        reviewStarsSummary.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            reviewStarsSummary.innerHTML += `<span class="${i <= data.reviews.average ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+        }
+        document.getElementById('review-summary-text').textContent = `${data.reviews.average} / 5.0 (${data.reviews.total} รีวิว)`;
+        
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+        data.reviews.items.forEach(review => {
+            reviewList.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow">
+                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
+                  <p class="text-gray-800">“${review.comment}”</p>
+                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
+                </div>
+            `;
+        });
+
+        // Map
+        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
+        
+        // Details Column
+        document.getElementById('address').textContent = data.address;
+        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
+        document.getElementById('cuisine-types').textContent = data.cuisine;
+        document.getElementById('atmosphere').textContent = data.atmosphere;
+        document.getElementById('payment-methods').textContent = data.payment;
+        
+        // Green Score
+        const greenScoreCircle = document.getElementById('green-score-circle');
+        const greenScoreText = document.getElementById('green-score-text');
+        const greenScoreDetails = document.getElementById('green-score-details');
+        greenScoreText.textContent = `${data.greenScore.score}`;
+        greenScoreCircle.style.strokeDasharray = `${data.greenScore.score}, 100`;
+        greenScoreDetails.innerHTML = data.greenScore.details.map(d => `
+            <li class="flex items-center"><span class="mr-2 ${d.achieved ? 'text-primary' : 'text-gray-400'}">${d.achieved ? '✓' : '✗'}</span> ${d.text}</li>
+        `).join('');
+
+        // Contact
+        const telLink = document.getElementById('contact-tel');
+        telLink.href = `tel:${data.contact.tel}`;
+        telLink.textContent = data.contact.tel;
+        document.getElementById('social-media-links').innerHTML = `
+            <a href="${data.contact.facebook}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
+            <a href="${data.contact.instagram}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
+            <a href="${data.contact.line}" class="text-green-500 hover:underline" target="_blank">Line</a>
+        `;
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openModal() {
+        expenseInput.value = '';
+        codeSection.classList.add('hidden');
+        expenseSection.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    // --- Event Listeners ---
+    discountBtn.addEventListener('click', openModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const amount = parseFloat(expenseInput.value) || 0;
+      if (amount <= 0) {
+          showToast("กรุณากรอกยอดค่าอาหารที่ถูกต้อง");
+          return;
+      }
+      const discountAmt = Math.round(amount * restaurantData.discount / 100);
+      const netPrice = amount - discountAmt;
+
+      document.getElementById('full-price').textContent = amount.toLocaleString();
+      document.getElementById('discount-percent').textContent = restaurantData.discount;
+      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
+      document.getElementById('net-price').textContent = netPrice.toLocaleString();
+      document.getElementById('discount-code').textContent = `SCGDEAL${Math.floor(Math.random() * 900) + 100}`;
+
+      const now = new Date();
+      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      expenseSection.classList.add('hidden');
+      codeSection.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    closeX.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    let selectedRating = 0;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('text-yellow-500', 'text-gray-300');
+                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+            });
+        });
+    });
+
+    document.getElementById('submit-review').addEventListener('click', () => {
+      const comment = document.getElementById('comment-input').value;
+      if (selectedRating === 0) {
+          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
+          return;
+      }
+      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
+      // Here you would typically send the review to a server
+      document.getElementById('comment-input').value = '';
+      selectedRating = 0;
+      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
+    });
+
+    // --- Initial Page Load ---
+    populatePage(restaurantData);
+
+  </script>
+</body>
+</html>
