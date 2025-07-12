@@ -3,30 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCG ONLY</title>
+  <title>SCG Inclusive Green Growth</title>
   <style>
-    /* --- General Styling & Modern Theme --- */
+    /* --- General Styling & Inclusive Green Growth Theme --- */
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap');
 
     :root {
-      --primary-color: #2E7D32; /* Original SCG Green */
-      --secondary-color: #F7F9F7; /* Lighter, cleaner background */
-      --accent-color: #E53935;   /* For discount badges */
-      --text-color: #212529;
-      --light-text: #6c757d;
+      --primary-color: #006A4E; /* Deep, trustworthy green */
+      --secondary-color: #F0F4F3; /* Light, airy green-gray */
+      --accent-color: #4CAF50;   /* Vibrant green for actions */
+      --discount-color: #D32F2F; /* Strong red for discounts */
+      --text-color: #212121;
+      --light-text: #616161;
       --card-bg: #FFFFFF;
-      --card-radius: 12px;
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-      --shadow-md: 0 5px 15px rgba(0,0,0,0.08);
-      --header-height: 60px;
+      --card-radius: 16px; /* Softer, more modern corners */
+      --shadow-sm: 0 4px 6px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 20px rgba(0,0,0,0.07);
+      --header-height: 70px;
       --nav-height: 80px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html {
-      height: 100%;
-    }
+    html { height: 100%; }
 
     body {
       font-family: 'Noto Sans Thai', sans-serif;
@@ -35,38 +34,42 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Prevent scrolling on the body */
+      overflow: hidden;
     }
 
     a { text-decoration: none; color: inherit; }
 
     /* --- Header with Logo --- */
     header {
-      background: var(--primary-color); color: #fff;
+      background: var(--card-bg);
+      color: var(--primary-color);
       height: var(--header-height);
       display: flex;
       align-items: center;
       padding: 0 24px;
-      box-shadow: var(--shadow-sm); z-index: 300;
+      box-shadow: var(--shadow-sm); 
+      z-index: 300;
       flex-shrink: 0;
+      border-bottom: 1px solid #e0e0e0;
     }
     .header-logo {
-        height: 32px;
+        height: 36px;
         width: auto;
     }
     .header-title {
         font-size: 22px;
-        font-weight: 500;
+        font-weight: 700;
         margin-left: 16px;
+        letter-spacing: 0.5px;
     }
 
     /* --- Main Navigation --- */
     .main-nav {
       display: flex; justify-content: center; gap: 1rem;
       background: var(--card-bg); padding: 12px;
-      box-shadow: var(--shadow-sm); z-index: 200;
       height: var(--nav-height);
       flex-shrink: 0;
+      border-bottom: 1px solid #e0e0e0;
     }
     .nav-item {
       display: flex; flex-direction: column; align-items: center;
@@ -75,15 +78,15 @@
       border-radius: var(--card-radius);
       cursor: pointer; transition: background-color 0.2s, color 0.2s;
       color: var(--light-text);
-      border: none;
+      border: 2px solid transparent;
     }
     .nav-item svg { width: 28px; height: 28px; fill: currentColor; transition: fill 0.2s; }
-    .nav-item span { font-size: 13px; font-weight: 500; }
+    .nav-item span { font-size: 13px; font-weight: 700; }
     .nav-item:hover { color: var(--primary-color); }
     .nav-item.active {
       color: var(--primary-color);
       background-color: var(--secondary-color);
-      font-weight: 700;
+      border-color: var(--primary-color);
     }
 
     /* --- Main Content Area --- */
@@ -91,7 +94,7 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Hide overflow from main */
+        overflow: hidden;
     }
 
     /* --- Page Container --- */
@@ -99,8 +102,8 @@
       display: none; 
       flex-direction: column; 
       height: 100%;
-      overflow-y: auto; /* Allow individual pages to scroll */
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .page.active { display: flex; }
 
@@ -124,7 +127,7 @@
     .filters-wrapper input[type="search"]:focus {
         border-color: var(--primary-color);
         outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(0, 106, 78, 0.25);
     }
 
     .scrollable-filters {
@@ -152,10 +155,11 @@
       border: none;
       transition: background-color 0.2s, transform 0.2s;
       color: #fff;
+      font-weight: 700;
     }
     .scrollable-filters button:hover { transform: translateY(-1px); }
     .scrollable-filters .random-btn { background: var(--accent-color); }
-    .scrollable-filters .random-btn:hover { background: #c62828; }
+    .scrollable-filters .random-btn:hover { background: #5cb85c; }
     .scrollable-filters .reset-btn { background: #757575; }
     .scrollable-filters .reset-btn:hover { background: #616161; }
     
@@ -195,7 +199,7 @@
     }
     .badge-discount {
       position: absolute; top: 12px; left: 12px;
-      background: var(--accent-color); color: #fff;
+      background: var(--discount-color); color: #fff;
       padding: 6px 12px; font-size: 14px; font-weight: 700;
       border-radius: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       animation: pulse 1.5s infinite;
@@ -205,7 +209,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(33, 33, 33, 0.7);
         color: white;
         font-size: 11px;
         font-weight: 700;
@@ -270,8 +274,8 @@
 </head>
 <body>
   <header>
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMzIiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMTUuNCAzMC4xYy0xLjgtLjgtMy43LTEuMy01LjgtMS4zLTggMC0xNC41IDYuNS0xNC41IDE0LjVzNi41IDE0LjUgMTQuNSAxNC41YzIuMSAwIDQuMS0uNSA1LjktMS40bC0xLjItMi45Yy0xLjQuOC0zIDEuMi00LjcgMS4yLTUuOSAwLTEwLjctNC44LTEwLjctMTAuN1MxMDQuNyAxMCAxMTAuNSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjgtem0xMS4zIDIuOGMtMS44IDEuOC00LjIgMi44LTYuOCAyLjhzLTUtMS02LjgtMi44Vjg1LjljMS44LTEuOCA0LjItMi44IDYuOC0yLjhzNSAxIDYuOCAyLjh2MTMuM3ptLTIuMy0xMy4zYy0xLjUtMS41LTMuNS0yLjItNS41LTIuMnMtNC4xLjctNS41IDIuMnYxMS45YzEuNSAxLjUgMy41IDIuMiA1LjUgMi4yczQuMS0uNyA1LjUtMi4yVjE5LjZ6TTg1LjggMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNSBjMi4xIDAgNC4xLS41IDUuOS0xLjRsLTEuMi0yLjljLTEuNC44LTMgMS4yLTQuNyAxLjItNS45IDAtMTAuNy00LjgtMTAuNy0xMC4⁷Uzc0LjMgMTAgODAuMSAxMGMxLjcgMCAzLjMuNCA0LjcgMS4ybDEuMi0yLjh6TTU3IDIyLjNjMCAxLjYtMS4zIDIuOC0yLjggMi44cy0yLjgtMS4zLTIuOC0yLjhWNC4ySDQ4djE4LjJjMCAzLjEgMS41IDUuOSA0LjEgNy40IDAgMCAuMS4xLjEuMWwuMi4xYy4zLjIuNi4zLjkuNVY0LjJoLTMuNFYxLjZoMTB2Mi42SDU3djE4LjF6TTM4LjMgMzAuMWMtMS44LS44LTMuNy0xLjMtNS44LTEuMy04IDAtMTQuNSA2LjUtMTQuNSAxNC41czYuNSAxNC41IDE0LjUgMTQuNWMzLjIgMCA2LjItMS4xIDguNi0zLjFsLTEuOC0yLjRjLTEuOCA MTEuNS0zLjggMi4xLTYuOCAyLjEtNC4zIDAtNy45LTMuNS03LjktNy45czMuNS03LjkgNy45LTcuOWMyLjkgMCA1LjUgMS42IDYuOCAzLjhsMS44LTIuNGMtMi40LTItNS40LTMuMS04LjYtMy4xeiIvPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yMS4xIDE2YzAgOC44LTEwLjEgMTYtMjEuMSAxNlM0LjIgMjQuOC0xMy45IDE2IDQuMiAwIDIxLjEgMCA0LjIgNy4yIDIxLjEgMTZ6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMy45KSIvPjwvc3ZnPg==" alt="" class="header-logo">
-    <span class="header-title">SCG ONLY</span>
+    <img src="https://www.scg.com/assets/frontend/images/logo.svg" alt="SCG Logo" class="header-logo">
+    <span class="header-title">Inclusive Green Growth</span>
   </header>
 
   <nav class="main-nav">
