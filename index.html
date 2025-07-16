@@ -134,16 +134,20 @@
     .scrollable-deals::-webkit-scrollbar { display: none; }
 
     .deal-card {
-      width: 180px; /* Set fixed width */
-      flex-shrink: 0; /* Prevent shrinking */
+      width: 180px;
+      flex-shrink: 0;
       background: var(--card-bg);
       border-radius: var(--card-radius);
       box-shadow: var(--shadow-sm);
-      overflow: hidden;
       position: relative;
       transition: transform .2s ease, box-shadow .2s ease;
       display: flex;
       flex-direction: column;
+    }
+    .deal-card .card-image {
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        position: relative;
     }
     .deal-card:hover {
         transform: translateY(-4px);
@@ -151,7 +155,7 @@
     }
     .deal-card img {
       width: 100%;
-      height: 90px; /* Adjusted height */
+      height: 100px;
       object-fit: cover;
     }
     .deal-card-info {
@@ -163,10 +167,14 @@
     }
     .deal-card-name {
       font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       font-size: 14px;
+      line-height: 1.4;
+      height: 2.8em; /* Reserve space for 2 lines */
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
     }
     .deal-highlight {
         margin-top: 8px;
@@ -197,7 +205,32 @@
       text-transform: uppercase;
       z-index: 2;
     }
-
+    .deal-overlay-discount {
+        position: absolute;
+        bottom: 8px;
+        right: 10px;
+        background: var(--discount-color);
+        color: white;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        font-weight: 700;
+        border: 3px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        z-index: 3;
+    }
+    .deal-overlay-discount span:first-child {
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+    .deal-overlay-discount strong {
+        font-size: 18px;
+    }
 
     /* --- Filter Controls --- */
     .filters-wrapper {
@@ -388,11 +421,6 @@
         .nav-item span {
             font-size: 12px;
         }
-
-        .deal-card {
-          width: 160px;
-          flex-shrink: 0;
-        }
         
         .card-image img {
             height: 200px;
@@ -506,9 +534,9 @@ document.addEventListener('DOMContentLoaded', () => {
     {id: 10, name:'Burger Town',discount:8,greenScore:50,rating:4.0,province:'ชุมพร',district:'เมืองชุมพร',type:'western',price:299, image: 'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'}
   ];
   const hotelData = [
-    {id: 1, name: 'Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 2, name: 'Chiang Mai Mountain Retreat', province: 'เชียงใหม่', price: 3800, rating: 4, amenities: ['วิวภูเขา', 'รวมอาหารเช้า'], discount: 20, image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
-    {id: 3, name: 'Phuket Beachside Resort', province: 'ภูเก็ต', price: 4500, rating: 4, amenities: ['ติดชายหาด', 'กีฬาทางน้ำ'], discount: 10, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+    {id: 1, name: 'Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', type: 'โรงแรม'},
+    {id: 2, name: 'Chiang Mai Mountain Retreat', province: 'เชียงใหม่', price: 3800, rating: 4, amenities: ['วิวภูเขา', 'รวมอาหารเช้า'], discount: 20, image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', type: 'โรงแรม'},
+    {id: 3, name: 'Phuket Beachside Resort', province: 'ภูเก็ต', price: 4500, rating: 4, amenities: ['ติดชายหาด', 'กีฬาทางน้ำ'], discount: 10, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', type: 'โรงแรม'}
   ];
   const lifestyleData = [
     {id: 1, category: 'สนามกอล์ฟ', name: 'Siam Country Club', province: 'ชลบุรี', discount: 10, details: ['18 หลุม x 4 สนาม', 'คลับเฮาส์หรู'], image: 'https://storage.googleapis.com/gdwp/2017/12/1-2BlackMountain_2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.9},
@@ -587,22 +615,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let detailsHtml = '';
 
     if (isExclusiveDeal) {
-        detailsHtml = `
+        card.innerHTML = `
+            <div class="card-image">
+                <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Error';">
+                <div class="badge-exclusive">Exclusive Deal</div>
+                <div class="deal-overlay-discount">
+                    <span>ลด</span>
+                    <strong>${item.discount}%</strong>
+                </div>
+            </div>
             <div class="deal-card-info">
                 <div>
                     <div class="deal-card-name">${item.name}</div>
-                    <div class="meta">${item.category || item.type}</div>
-                </div>
-                <div class="deal-highlight">
-                    <span class="deal-highlight-text">ส่วนลด</span>
-                    <span class="deal-highlight-percent">${item.discount}%</span>
+                    <div class="meta">${item.category || item.type || ''}</div>
                 </div>
             </div>
         `;
-    } else if (itemType === 'restaurant') {
-      detailsHtml = `
-        <div class="item-info">
-            <div><div class="item-name">${item.name}</div></div>
+    } else {
+        if (itemType === 'restaurant') {
+          detailsHtml = `
             <div><span class="rating">${item.rating} ★</span><span class="meta"> ฿${item.price}</span></div>
             <div class="meta">ประเภท: ${item.type}</div>
             <div class="meta location">${item.district}, ${item.province}</div>
@@ -610,12 +641,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="green-score-label">Green Score: ${item.greenScore}</div>
               <div class="green-score-bar"><div class="green-score-fill" style="width: ${item.greenScore}%;"></div></div>
             </div>
-        </div>
-      `;
-    } else if (itemType === 'hotel') {
-      detailsHtml = `
-        <div class="item-info">
-            <div><div class="item-name">${item.name}</div></div>
+          `;
+        } else if (itemType === 'hotel') {
+          detailsHtml = `
             <div>
               <span class="rating">${'★'.repeat(item.rating)}</span>
               <span class="meta"> ฿${item.price}/คืน</span>
@@ -624,39 +652,53 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="amenities-container">
               <div class="amenities-list">${item.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}</div>
             </div>
-        </div>
-      `;
-    } else if (itemType === 'lifestyle') {
-      detailsHtml = `
-        <div class="item-info">
-            <div><div class="item-name">${item.name}</div></div>
+          `;
+        } else if (itemType === 'lifestyle') {
+          detailsHtml = `
             <div><span class="rating">${item.rating} ★</span><span class="meta"> ${item.category}</span></div>
             <div class="meta location">${item.province}</div>
             <div class="amenities-container">
               <div class="amenities-list">${item.details.map(d => `<span class="amenity-tag">${d}</span>`).join('')}</div>
             </div>
-        </div>
-      `;
-    }
+          `;
+        }
 
-    card.innerHTML = `
-      <div class="card-image">
-        <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Error';">
-        ${isExclusiveDeal ? '<div class="badge-exclusive">Exclusive Deal</div>' : ''}
-        ${item.isAd ? '<div class="badge-ad">Ad</div>' : ''}
-        ${item.discount && !isExclusiveDeal ? `<div class="badge-discount">-${item.discount}%</div>` : ''}
-      </div>
-      ${detailsHtml}
-    `;
+        card.innerHTML = `
+            <div class="card-image">
+                <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Error';">
+                ${item.isAd ? '<div class="badge-ad">Ad</div>' : ''}
+                ${item.discount ? `<div class="badge-discount">-${item.discount}%</div>` : ''}
+            </div>
+            <div class="item-info">
+                <div><div class="item-name">${item.name}</div></div>
+                ${detailsHtml}
+            </div>
+        `;
+    }
+    
     link.appendChild(card);
     return link;
   }
 
   function findAndRenderTopDeals() {
     const findTop = (data, category = null) => {
-        const list = category ? data.filter(item => item.category === category) : data;
+        let list = data;
+        if (category) {
+            list = data.filter(item => item.category === category);
+        } else if (data.length > 0 && !data[0].category) { // Heuristic for restaurant/hotel
+            list = data;
+        }
+        
         if (list.length === 0) return null;
-        return list.reduce((prev, current) => (prev.discount > current.discount) ? prev : current);
+        
+        let topItem = list.reduce((prev, current) => (prev.discount > current.discount) ? prev : current);
+        
+        // Add type for rendering deal card correctly
+        if (!topItem.category && !topItem.type) {
+            if ('amenities' in topItem) topItem.type = 'โรงแรม';
+            else if ('greenScore' in topItem) topItem.type = 'ร้านอาหาร';
+        }
+        return topItem;
     };
 
     const allTopDeals = [
