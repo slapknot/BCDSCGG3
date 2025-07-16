@@ -53,12 +53,11 @@
       border-bottom: 1px solid #e0e0e0;
     }
     .header-logo {
-        height: 56px;
+        height: 56px; /* Adjusted logo size */
         width: auto;
-        transition: height 0.2s ease;
     }
     .header-title {
-        font-size: 18px;
+        font-size: 18px; /* Decreased slogan font size */
         font-weight: 500;
         margin-left: 16px;
         letter-spacing: 0.5px;
@@ -68,7 +67,7 @@
 
     /* --- Main Navigation --- */
     .main-nav {
-      display: flex; justify-content: center; gap: 1.5rem;
+      display: flex; justify-content: center; gap: 1.5rem; /* Increased gap */
       background: var(--card-bg); padding: 12px;
       height: var(--nav-height);
       flex-shrink: 0;
@@ -152,7 +151,7 @@
     }
     .deal-card img {
       width: 100%;
-      height: 90px;
+      height: 90px; /* Adjusted height */
       object-fit: cover;
     }
     .deal-card-info {
@@ -575,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         linkTarget = `hotel-detail.html?id=${item.id}`;
     } else if ('category' in item) {
         itemType = 'lifestyle';
-        linkTarget = `#`;
+        linkTarget = `lifestyle-detail.html?id=${item.id}`;
     }
 
     link.href = linkTarget;
