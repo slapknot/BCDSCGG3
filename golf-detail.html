@@ -1,392 +1,949 @@
-
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายละเอียดสนามกอล์ฟ</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>CORTABLE</title>
   <style>
+    /* --- General Styling & Inclusive Green Growth Theme --- */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap');
+
     :root {
-      --primary-color: #2E7D32;
-      --secondary-color: #F7F9F7;
-      --accent-color: #E53935;
-      --text-color: #212529;
-      --light-text: #6c757d;
+      --primary-color: #006A4E; /* Deep, trustworthy green */
+      --secondary-color: #F0F4F3; /* Light, airy green-gray */
+      --accent-color: #4CAF50;   /* Vibrant green for actions */
+      --discount-color: #D32F2F; /* Strong red for discounts */
+      --text-color: #212121;
+      --light-text: #616161;
       --card-bg: #FFFFFF;
-      --card-radius: 12px;
-    }
-    body {
-        font-family: 'Sarabun', sans-serif;
-        background-color: var(--secondary-color);
-    }
-    .font-sarabun { font-family: 'Sarabun', sans-serif; }
-    .bg-primary { background-color: var(--primary-color); }
-    .text-primary { color: var(--primary-color); }
-    .bg-accent { background-color: var(--accent-color); }
-    .text-accent { color: var(--accent-color); }
-    
-    .modal-fade {
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .modal-fade.hidden {
-        opacity: 0;
-        visibility: hidden;
+      --card-radius: 16px; /* Softer, more modern corners */
+      --shadow-sm: 0 4px 6px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 20px rgba(0,0,0,0.07);
+      --header-height: 80px; /* Increased header height */
+      --nav-height: 90px; /* Increased nav height */
     }
 
-    #toast-notification {
-        transition: opacity 0.5s, transform 0.5s;
-        transform: translateY(100%);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: var(--secondary-color);
+      color: var(--text-color);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    #toast-notification.show {
-        transform: translateY(0);
-        opacity: 1;
+
+    a { text-decoration: none; color: inherit; }
+
+    /* --- Header with Logo --- */
+    header {
+      background: var(--card-bg);
+      color: var(--primary-color);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      box-shadow: var(--shadow-sm); 
+      z-index: 300;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .header-logo {
+        height: 56px;
+        width: auto;
+        transition: height 0.2s ease;
+    }
+    .header-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-left: 16px;
+        letter-spacing: 0.5px;
+        color: var(--light-text);
+        transition: font-size 0.2s ease;
+    }
+
+    /* --- Main Navigation --- */
+    .main-nav {
+      display: flex; justify-content: center; gap: 1.5rem;
+      background: var(--card-bg); padding: 12px;
+      height: var(--nav-height);
+      flex-shrink: 0;
+      border-bottom: 1px solid #e0e0e0;
+      transition: height 0.2s ease, gap 0.2s ease;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 16px;
+      border-radius: var(--card-radius);
+      cursor: pointer; transition: background-color 0.2s, color 0.2s, padding 0.2s ease;
+      color: var(--light-text);
+      border: 2px solid transparent;
+    }
+    .nav-item svg { width: 32px; height: 32px; fill: currentColor; transition: width 0.2s ease, height 0.2s ease; }
+    .nav-item span { font-size: 15px; font-weight: 700; transition: font-size 0.2s ease; }
+    .nav-item:hover { color: var(--primary-color); }
+    .nav-item.active {
+      color: var(--primary-color);
+      background-color: var(--secondary-color);
+      border-color: var(--primary-color);
+    }
+
+    /* --- Main Content Area --- */
+    main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* --- Page Container --- */
+    .page { 
+      display: none; 
+      flex-direction: column; 
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .page.active { display: flex; }
+    
+    /* --- Exclusive Deals Section --- */
+    .exclusive-deals-wrapper {
+      padding: 16px 0 16px 16px;
+      background-color: var(--secondary-color);
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+      padding-left: 4px; /* Align with cards */
+    }
+    .scrollable-deals {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding-bottom: 12px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .scrollable-deals::-webkit-scrollbar { display: none; }
+
+    .deal-card {
+      width: 180px; /* Set fixed width */
+      flex-shrink: 0; /* Prevent shrinking */
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      position: relative;
+      transition: transform .2s ease, box-shadow .2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .deal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+    .deal-card img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+    }
+    .deal-card-info {
+      padding: 10px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .deal-card-name {
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
+    .deal-highlight {
+        margin-top: 8px;
+        text-align: center;
+    }
+    .deal-highlight-text {
+        font-size: 11px;
+        color: var(--light-text);
+        display: block;
+    }
+    .deal-highlight-percent {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--discount-color);
+        line-height: 1;
+    }
+    .badge-exclusive {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+
+    /* --- Filter Controls --- */
+    .filters-wrapper {
+      background-color: var(--card-bg);
+      padding: 16px;
+      border-bottom: 1px solid #e9ecef;
+      flex-shrink: 0;
+    }
+    
+    .filters-wrapper input[type="search"] {
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 16px;
+        border: 1px solid #ced4da;
+        border-radius: var(--card-radius);
+        margin-bottom: 12px;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    .filters-wrapper input[type="search"]:focus {
+        border-color: var(--primary-color);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 106, 78, 0.25);
+    }
+
+    .scrollable-filters {
+        display: flex;
+        overflow-x: auto;
+        gap: 8px;
+        white-space: nowrap;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollable-filters::-webkit-scrollbar { display: none; }
+
+    .scrollable-filters select,
+    .scrollable-filters button {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      font-size: 14px;
+      border: 1px solid #ced4da;
+      border-radius: var(--card-radius);
+      background: #fff;
+    }
+
+    .scrollable-filters button {
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s, transform 0.2s;
+      color: #fff;
+      font-weight: 700;
+    }
+    .scrollable-filters button:hover { transform: translateY(-1px); }
+    .scrollable-filters .random-btn { background: var(--accent-color); }
+    .scrollable-filters .random-btn:hover { background: #5cb85c; }
+    .scrollable-filters .reset-btn { background: #757575; }
+    .scrollable-filters .reset-btn:hover { background: #616161; }
+    
+    #selected-name-restaurant {
+        display: block;
+        text-align: center;
+        padding-top: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    /* --- Content List & Cards --- */
+    .content-list {
+      display: grid; grid-template-columns: 1fr;
+      gap: 16px; padding: 16px;
+      flex-grow: 1;
+    }
+    @media (min-width: 768px) { .content-list { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1280px) { .content-list { grid-template-columns: repeat(4, 1fr); } }
+
+    .item-card-link { display: block; }
+    .item-card {
+      background: var(--card-bg); border-radius: var(--card-radius);
+      overflow: hidden; box-shadow: var(--shadow-sm);
+      transition: transform .3s ease, box-shadow .3s ease;
+      height: 100%; display: flex; flex-direction: column;
+    }
+    .item-card-link:hover .item-card {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+    .card-image { position: relative; }
+    .card-image img {
+      width: 100%; height: 250px;
+      object-fit: cover; display: block;
+      background-color: #eee;
+    }
+    .badge-discount {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--discount-color); color: #fff;
+      padding: 6px 12px; font-size: 14px; font-weight: 700;
+      border-radius: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      animation: pulse 1.5s infinite;
+      z-index: 1;
+    }
+    .badge-ad {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background-color: rgba(33, 33, 33, 0.7);
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 1;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .item-info {
+      padding: 16px; flex-grow: 1;
+      display: flex; flex-direction: column;
+    }
+    .item-name {
+      font-size: 18px; font-weight: 700;
+      margin-bottom: 8px; line-height: 1.4;
+    }
+    .rating {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #FFB74D; color: #fff;
+      padding: 4px 10px; font-size: 13px; font-weight: 700;
+      border-radius: 6px; margin-right: 8px;
+    }
+    .meta {
+      font-size: 14px; color: var(--light-text);
+      margin: 4px 0; display: block;
+    }
+    .location::before { content: '📍'; margin-right: 6px; }
+    .green-score-container, .amenities-container { margin-top: auto; padding-top: 12px; }
+    .green-score-label {
+      font-size: 12px; color: var(--light-text); margin-bottom: 4px;
+    }
+    .green-score-bar {
+      width: 100%; background: #e9ecef; border-radius: 4px;
+      overflow: hidden; height: 8px;
+    }
+    .green-score-fill {
+      height: 100%; background: var(--primary-color);
+      transition: width 0.5s ease-in-out;
+    }
+    .amenities-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .amenity-tag {
+      background: var(--secondary-color); color: var(--primary-color);
+      font-size: 12px; padding: 4px 10px; border-radius: 16px;
+      font-weight: 500;
+    }
+    .highlight {
+      box-shadow: 0 0 0 3px var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    .message-box {
+        text-align: center; padding: 40px 20px;
+        color: var(--light-text); font-size: 16px;
+        grid-column: 1 / -1;
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+        :root {
+            --header-height: 60px;
+            --nav-height: 70px;
+        }
+        
+        .header-logo {
+            height: 40px;
+        }
+        .header-title {
+            font-size: 14px;
+        }
+
+        .main-nav {
+            gap: 0.5rem;
+        }
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-item span {
+            font-size: 12px;
+        }
+
+        .deal-card {
+          width: 160px;
+          flex-shrink: 0;
+        }
+        
+        .card-image img {
+            height: 200px;
+        }
     }
   </style>
 </head>
-<body class="font-sarabun relative">
+<body>
+  <header>
+    <img src="https://github.com/slapknot/BCDSCGG3/blob/main/Cortable.png?raw=true" alt="CORTABLE Logo" class="header-logo">
+    <span class="header-title"> Where Business Meets Taste
+ </span>
+  </header>
 
-  <!-- Header -->
-  <nav class="bg-white shadow-md sticky top-0 z-20">
-    <div class="container mx-auto px-6 py-3">
-        <a href="index.html" id="back-to-main" class="text-primary font-bold text-xl flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            กลับสู่หน้าแรก
-        </a>
-    </div>
+  <nav class="main-nav">
+    <a href="#restaurants" class="nav-item active" data-page="restaurants">
+      <svg viewBox="0 0 24 24"><path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V13C10.19,12.89 11,12.05 11,11.1V9M16,2V22H18V2H16Z"></path></svg>
+      <span>ร้านอาหาร</span>
+    </a>
+    <a href="#hotels" class="nav-item" data-page="hotels">
+      <svg viewBox="0 0 24 24"><path d="M19,7H11V14H3V5H1V20H3V17H21V20H23V11A4,4 0 0,0 19,7M7,13A3,3 0 0,0 10,10A3,3 0 0,0 7,7A3,3 0 0,0 4,10A3,3 0 0,0 7,13Z"></path></svg>
+      <span>โรงแรม</span>
+    </a>
+    <a href="#lifestyle" class="nav-item" data-page="lifestyle">
+      <svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L17,14.64L22,9.24L15.81,8.62L12,3L8.19,8.62L2,9.24L7,14.64L5.82,21L12,17.27Z"></path></svg>
+      <span>ไลฟ์สไตล์</span>
+    </a>
   </nav>
 
-  <main class="container mx-auto p-4 md:p-6 space-y-8">
-    <!-- Content will be loaded here. Shows a loading message initially. -->
-    <div id="content-placeholder">
-        <h1 class="text-2xl text-center text-gray-500 mt-10">กำลังโหลดข้อมูลสนามกอล์ฟ...</h1>
-    </div>
-    <div id="golf-content" class="hidden space-y-8">
-        <!-- 1. Golf Course Info & Discount -->
-        <section>
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 id="golf-name" class="text-3xl font-bold text-primary"></h1>
-                <p id="golf-description" class="text-gray-700 mt-2 max-w-2xl"></p>
-            </div>
-            <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
-                รับโค้ดส่วนลด
-            </button>
-          </div>
-        </section>
-
-        <!-- 2. Main Image -->
-        <div class="relative">
-          <img id="main-image" src="" alt="ภาพสนามกอล์ฟ" class="w-full h-72 object-cover rounded-xl shadow-lg">
-          <span id="image-discount-badge" class="absolute top-4 right-4 bg-accent text-white font-bold px-4 py-2 rounded-full text-lg"></span>
+  <main>
+    <!-- Restaurants Page -->
+    <div id="page-restaurants" class="page active">
+      <div class="exclusive-deals-wrapper">
+        <h2 class="section-title">Exclusive Deals</h2>
+        <div class="scrollable-deals" id="exclusive-deals-restaurant"></div>
+      </div>
+      <div class="filters-wrapper">
+        <input type="search" id="search-input-restaurant" placeholder="ค้นหาร้านอาหาร...">
+        <div class="scrollable-filters">
+          <select id="filter-province-restaurant"><option value="">จังหวัด</option></select>
+          <select id="filter-district-restaurant" disabled><option value="">อำเภอ/เขต</option></select>
+          <select id="filter-type-restaurant"><option value="">ประเภทอาหาร</option><option value="buffet">บุฟเฟ่ต์</option><option value="asian">เอเชีย</option><option value="western">ตะวันตก</option></select>
+          <select id="filter-dining-style-restaurant"><option value="">ประเภทการรับประทาน</option><option value="ทั่วไป">รับประทานทั่วไป</option><option value="ทั่วไปและจัดเลี้ยง">รับประทานทั่วไปและจัดเลี้ยง</option></select>
+          <select id="filter-price-restaurant"><option value="">ราคา (฿)</option><option value="0-200">0 – 200</option><option value="201-500">201 – 500</option><option value="501-1000">501 – 1000</option><option value="1001-">1001+</option></select>
+          <select id="sort-order-restaurant"><option value="">จัดเรียง</option><option value="price_desc">ราคาสูง-ต่ำ</option><option value="rating_desc">คะแนนสูง-ต่ำ</option><option value="discount_desc">ส่วนลด สูง-ต่ำ</option></select>
+          <button id="random-btn-restaurant" class="random-btn">สุ่มร้าน</button>
+          <button id="reset-btn-restaurant" class="reset-btn">ล้างค่า</button>
         </div>
+        <span id="selected-name-restaurant"></span>
+      </div>
+      <div id="restaurants-list" class="content-list">
+        <div class="message-box">กำลังโหลด...</div>
+      </div>
+    </div>
 
-        <!-- 3. Course Highlights -->
-        <section>
-          <h2 class="text-2xl font-semibold text-primary mb-4">ไฮไลท์ของสนาม</h2>
-          <div id="highlight-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Highlights will be injected here by JS -->
-          </div>
-        </section>
+    <!-- Hotels Page -->
+    <div id="page-hotels" class="page">
+      <div class="exclusive-deals-wrapper">
+        <h2 class="section-title">Exclusive Deals</h2>
+        <div class="scrollable-deals" id="exclusive-deals-hotel"></div>
+      </div>
+      <div class="filters-wrapper">
+        <input type="search" id="search-input-hotel" placeholder="ค้นหาโรงแรม...">
+        <div class="scrollable-filters">
+          <select id="filter-province-hotel"><option value="">จังหวัด</option></select>
+          <select id="filter-price-hotel"><option value="">ราคา/คืน (฿)</option><option value="0-3000">0 - 3000</option><option value="3001-5000">3001 - 5000</option><option value="5001-">5001+</option></select>
+          <select id="filter-rating-hotel"><option value="">ระดับดาว</option><option value="3">3 ★</option><option value="4">4 ★</option><option value="5">5 ★</option></select>
+          <button id="reset-btn-hotel" class="reset-btn">ล้างค่า</button>
+        </div>
+      </div>
+      <div id="hotels-list" class="content-list">
+        <div class="message-box">เลือกตัวกรองเพื่อค้นหาโรงแรม</div>
+      </div>
+    </div>
 
-        <!-- 4. Reviews -->
-        <section>
-          <h2 class="text-2xl font-semibold text-primary mb-4">คะแนนรีวิว</h2>
-          <div class="flex items-center space-x-2 mb-4">
-            <div id="review-stars-summary" class="flex text-yellow-500 text-2xl"></div>
-            <span id="review-summary-text" class="text-gray-600 ml-2 font-semibold text-lg"></span>
-          </div>
-          <div id="review-list" class="space-y-4">
-            <!-- Reviews will be injected here by JS -->
-          </div>
-        </section>
-        
-        <!-- 5. Map -->
-        <section>
-          <h2 class="text-2xl font-semibold text-primary mb-2">แผนที่</h2>
-          <div id="map-container" class="w-full rounded-xl overflow-hidden shadow-lg">
-            <!-- Map iframe will be injected here -->
-          </div>
-        </section>
-
-        <!-- Details Column -->
-        <section class="bg-white p-6 rounded-xl shadow-lg space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div><h3 class="text-lg font-semibold text-primary">ที่อยู่</h3><p id="address" class="text-gray-700"></p></div>
-                <div><h3 class="text-lg font-semibold text-primary">ข้อมูลสนาม</h3><ul id="course-info" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
-                <div><h3 class="text-lg font-semibold text-primary">สิ่งอำนวยความสะดวกหลัก</h3><ul id="amenities" class="list-disc pl-5 space-y-1 text-gray-700"></ul></div>
-                <div>
-                    <h3 class="text-lg font-semibold text-primary">ติดต่อสนามกอล์ฟ</h3>
-                    <p class="text-gray-700">เบอร์ติดต่อ: <a id="contact-tel" href="" class="text-green-600 hover:underline"></a></p>
-                    <div id="social-media-links" class="flex space-x-4 mt-2"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Write Review -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-          <h2 class="text-2xl font-semibold text-primary mb-4">เขียนรีวิวของคุณ</h2>
-          <div id="star-rating-input" class="flex space-x-1 text-3xl mb-4">
-            <span data-value="1" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-            <span data-value="2" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-            <span data-value="3" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-            <span data-value="4" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-            <span data-value="5" class="cursor-pointer text-gray-300 hover:text-yellow-400 transition">★</span>
-          </div>
-          <textarea id="comment-input" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="แบ่งปันประสบการณ์ของคุณ..."></textarea>
-          <button id="submit-review" class="mt-4 bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-green-800 transition duration-300">ส่งรีวิว</button>
-        </section>
+    <!-- Lifestyle Page -->
+    <div id="page-lifestyle" class="page">
+      <div class="exclusive-deals-wrapper">
+        <h2 class="section-title">Exclusive Deals</h2>
+        <div class="scrollable-deals" id="exclusive-deals-lifestyle"></div>
+      </div>
+      <div class="filters-wrapper">
+        <input type="search" id="search-input-lifestyle" placeholder="ค้นหาไลฟ์สไตล์...">
+        <div class="scrollable-filters">
+          <select id="filter-category-lifestyle"><option value="">ทุกประเภท</option><option value="สนามกอล์ฟ">สนามกอล์ฟ</option><option value="โรงภาพยนตร์">โรงภาพยนตร์</option><option value="ฟิตเนส">ฟิตเนส</option><option value="ร้านนวด">ร้านนวด</option><option value="สปา">สปา</option></select>
+          <select id="filter-province-lifestyle"><option value="">จังหวัด</option></select>
+          <select id="sort-order-lifestyle"><option value="">จัดเรียง</option><option value="discount_desc">ส่วนลด สูง-ต่ำ</option></select>
+          <button id="reset-btn-lifestyle" class="reset-btn">ล้างค่า</button>
+        </div>
+      </div>
+      <div id="lifestyle-list" class="content-list">
+         <div class="message-box">เลือกตัวกรองเพื่อค้นหา</div>
+      </div>
     </div>
   </main>
 
-  <!-- Modal -->
-  <div id="discount-modal" class="modal-fade fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-30">
-    <div class="relative bg-white rounded-xl p-6 shadow-lg w-11/12 max-w-sm text-center transform transition-all scale-95 opacity-0" id="modal-content">
-      <button id="modal-close-x" class="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl font-light">×</button>
-      <div id="expense-section">
-        <h3 class="text-xl font-semibold text-primary mb-4">กรุณากรอกค่าบริการ (Green Fee)</h3>
-        <input id="expense-input" type="number" min="0" placeholder="ยอดรวมค่าบริการ (บาท)" class="w-full border rounded-lg p-2 mb-4 text-center text-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-        <button id="confirm-expense-btn" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg w-full hover:bg-blue-700 transition">ยืนยันยอด</button>
-      </div>
-      <div id="code-section" class="hidden">
-        <p class="text-gray-700 mb-2">ราคาเต็ม: <span id="full-price" class="font-medium"></span> บาท</p>
-        <p class="text-gray-700 mb-2">ส่วนลด (<span id="discount-percent" class="font-medium"></span>%): <span id="discount-amount" class="font-medium text-accent"></span> บาท</p>
-        <p class="text-gray-700 mb-4">ราคาสุทธิ: <span id="net-price" class="font-bold text-primary text-xl"></span> บาท</p>
-        <h3 class="text-lg font-semibold text-primary mb-2">โค้ดส่วนลดของคุณ</h3>
-        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4">
-            <p id="discount-code" class="text-3xl font-bold text-accent tracking-widest"></p>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- DATA ---
+  const restaurantData = [
+    {id: 1, name:'ร้านบ้านสวนออร์แกนิก',discount:10,greenScore:92,rating:4.7,province:'ชลบุรี',district:'ศรีราชา',type:'buffet',price:450, image: 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไปและจัดเลี้ยง'},
+    {id: 2, name:'ส้มตำแม่บุญช่วย',discount:15,greenScore:75,rating:4.3,province:'ขอนแก่น',district:'เมืองขอนแก่น',type:'asian',price:129, image: 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'},
+    {id: 3, name:'SteakHouse Prime',discount:20,greenScore:60,rating:4.8,province:'กรุงเทพฯ',district:'วัฒนา',type:'western',price:1299, image: 'https://images.pexels.com/photos/1251208/pexels-photo-1251208.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: true, diningStyle: 'ทั่วไปและจัดเลี้ยง'},
+    {id: 4, name:'ก๋วยเตี๋ยวเรือนายโอ',discount:5,greenScore:55,rating:4.2,province:'นครราชสีมา',district:'ปากช่อง',type:'asian',price:89, image: 'https://cms.dmpcdn.com/food/2020/06/08/a511be30-a951-11ea-9cca-0796b916f819_original.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'},
+    {id: 5, name:'La Pizzeria Italiano',discount:25,greenScore:80,rating:4.6,province:'เชียงใหม่',district:'เมืองเชียงใหม่',type:'western',price:550, image: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไปและจัดเลี้ยง'},
+    {id: 6, name:'Buffet ซีฟู้ดเดลิเวอรี่',discount:30,greenScore:95,rating:4.9,province:'ภูเก็ต',district:'ราไวย์',type:'buffet',price:799, image: 'https://s359.kapook.com/rq/600/auto/50/pagebuilder/30a38cbd-9a54-4eb9-b39c-b4386d299cc2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไปและจัดเลี้ยง'},
+    {id: 7, name:'ร้านข้าวแกงปักษ์ใต้',discount:12,greenScore:65,rating:4.1,province:'นครศรีธรรมราช',district:'เมืองนครศรีธรรมราษฎร์',type:'asian',price:159, image: 'https://mpics-cdn-acc.mgronline.com/pics/Images/562000007549101.JPEG?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'},
+    {id: 8, name:'Sushi Master',discount:18,greenScore:85,rating:4.5,province:'กรุงเทพฯ',district:'บางรัก',type:'asian',price:899, image: 'https://www.kikkoman.eu/fileadmin/_processed_/4/2/csm_sushi-kakkoii_eb92ad14ee.webp?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: true, diningStyle: 'ทั่วไป'},
+    {id: 9, name:'Curry & Rice',discount:22,greenScore:70,rating:4.4,province:'สุพรรณบุรี',district:'อู่ทอง',type:'asian',price:199, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm9O98aT5wpQDEu5vNOgg0DeUIYK_5vXtvIw&s?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'},
+    {id: 10, name:'Burger Town',discount:8,greenScore:50,rating:4.0,province:'ชุมพร',district:'เมืองชุมพร',type:'western',price:299, image: 'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', isAd: false, diningStyle: 'ทั่วไป'}
+  ];
+  const hotelData = [
+    {id: 1, name: 'Grand Hotel', province: 'กรุงเทพฯ', price: 5500, rating: 5, amenities: ['สระว่ายน้ำ', 'สปา', 'ฟิตเนส'], discount: 15, image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 2, name: 'Chiang Mai Mountain Retreat', province: 'เชียงใหม่', price: 3800, rating: 4, amenities: ['วิวภูเขา', 'รวมอาหารเช้า'], discount: 20, image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
+    {id: 3, name: 'Phuket Beachside Resort', province: 'ภูเก็ต', price: 4500, rating: 4, amenities: ['ติดชายหาด', 'กีฬาทางน้ำ'], discount: 10, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+  ];
+  const lifestyleData = [
+    {id: 1, category: 'สนามกอล์ฟ', name: 'Siam Country Club', province: 'ชลบุรี', discount: 10, details: ['18 หลุม x 4 สนาม', 'คลับเฮาส์หรู'], image: 'https://storage.googleapis.com/gdwp/2017/12/1-2BlackMountain_2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.9},
+    {id: 2, category: 'สนามกอล์ฟ', name: 'Alpine Golf Club', province: 'กรุงเทพฯ', discount: 15, details: ['สนามแชมเปี้ยนชิพ', 'ท้าทาย'], image: 'https://storage.googleapis.com/gdwp/2017/12/3-2rancho.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.8},
+    {id: 3, category: 'สนามกอล์ฟ', name: 'Blue Canyon Country Club', province: 'ภูเก็ต', discount: 5, details: ['เคยจัดทัวร์นาเมนต์', 'หรูหรา'], image: 'https://storage.googleapis.com/gdwp/2017/12/3-1bonanza02.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.7},
+    {id: 4, category: 'โรงภาพยนตร์', name: 'Cinema Paradise', province: 'กรุงเทพฯ', discount: 25, details: ['ส่วนลดตั๋วหนัง', 'ระบบ IMAX', 'Dolby Atmos'], image: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.5},
+    {id: 5, category: 'โรงภาพยนตร์', name: 'The Premiere Screen', province: 'กรุงเทพฯ', discount: 20, details: ['ส่วนลดตั๋วหนัง', 'ที่นั่งโซฟา', 'บริการเลานจ์'], image: 'https://images.pexels.com/photos/379964/pexels-photo-379964.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.8},
+    {id: 6, category: 'โรงภาพยนตร์', name: 'Family Cineplex', province: 'ชลบุรี', discount: 30, details: ['ส่วนลดตั๋วหนัง', 'โปรแกรมสำหรับเด็ก', 'Kids Cinema'], image: 'https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.2},
+    {id: 7, category: 'ฟิตเนส', name: 'Fitness First - Siam Paragon', province: 'กรุงเทพฯ', discount: 15, details: ['ส่วนลดค่าสมาชิกรายปี', 'คลาสโยคะ', 'สระว่ายน้ำ'], image: 'https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.7},
+    {id: 8, category: 'ฟิตเนส', name: 'Jetts 24 Hour Fitness', province: 'เชียงใหม่', discount: 10, details: ['ส่วนลดค่าสมาชิก', 'เปิด 24 ชั่วโมง'], image: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.4},
+    {id: 9, category: 'ฟิตเนส', name: 'Virgin Active', province: 'กรุงเทพฯ', discount: 20, details: ['ส่วนลดค่าสมาชิก', 'ห้องปีนผาจำลอง', 'คลาสหลากหลาย'], image: 'https://images.pexels.com/photos/3768916/pexels-photo-3768916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.8},
+    {id: 10, category: 'ฟิตเนส', name: 'The Lab BKK', province: 'กรุงเทพฯ', discount: 25, details: ['ส่วนลด Personal Training', 'Functional Training'], image: 'https://images.pexels.com/photos/3076516/pexels-photo-3076516.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.9},
+    {id: 11, category: 'ร้านนวด', name: 'Let\'s Relax Spa', province: 'กรุงเทพฯ', discount: 15, details: ['นวดไทย', 'นวดเท้า', 'ออนเซ็น'], image: 'https://images.pexels.com/photos/3768894/pexels-photo-3768894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.8},
+    {id: 12, category: 'ร้านนวด', name: 'Health Land', province: 'กรุงเทพฯ', discount: 10, details: ['นวดแผนไทย', 'นวดประคบสมุนไพร'], image: 'https://images.pexels.com/photos/3757955/pexels-photo-3757955.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.5},
+    {id: 13, category: 'ร้านนวด', name: 'Oasis Spa', province: 'เชียงใหม่', discount: 20, details: ['นวดล้านนา', 'สปาทรีทเมนท์'], image: 'https://images.pexels.com/photos/3997989/pexels-photo-3997989.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.9},
+    {id: 14, category: 'สปา', name: 'Divana Scentuara Spa', province: 'กรุงเทพฯ', discount: 25, details: ['สปาหรู', 'ทรีทเมนท์ออร์แกนิก'], image: 'https://images.pexels.com/photos/3738349/pexels-photo-3738349.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.9},
+    {id: 15, category: 'สปา', name: 'Banyan Tree Spa', province: 'ภูเก็ต', discount: 15, details: ['สปาในโรงแรม', 'วิวทะเล'], image: 'https://images.pexels.com/photos/7262995/pexels-photo-7262995.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 5.0},
+    {id: 16, category: 'สปา', name: 'Panpuri Wellness', province: 'กรุงเทพฯ', discount: 20, details: ['ออนเซ็น', 'สปาออร์แกนิก'], image: 'https://images.pexels.com/photos/3985321/pexels-photo-3985321.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.8},
+    {id: 17, category: 'สปา', name: 'RarinJinda Wellness Spa', province: 'เชียงใหม่', discount: 10, details: ['เวลเนสสปา', 'ไฮโดรเธอราพี'], image: 'https://images.pexels.com/photos/3212164/pexels-photo-3212164.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', rating: 4.7}
+  ];
+
+  // --- PAGE NAVIGATION ---
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
+  
+  function navigateToPage(pageId) {
+      navItems.forEach(nav => nav.classList.toggle('active', nav.dataset.page === pageId));
+      pages.forEach(page => page.classList.toggle('active', page.id === `page-${pageId}`));
+      window.location.hash = pageId;
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToPage(item.dataset.page);
+    });
+  });
+
+  const initialPage = window.location.hash.replace('#', '') || 'restaurants';
+  navigateToPage(initialPage);
+
+  // --- SHARED FUNCTIONS ---
+  function populateFilter(selectElement, data, key) {
+    const uniqueValues = [...new Set(data.map(item => item[key]))].sort();
+    uniqueValues.forEach(val => {
+      let opt = document.createElement('option');
+      opt.value = val;
+      opt.text = val;
+      selectElement.add(opt);
+    });
+  }
+
+  function createItemCard(item, isExclusiveDeal = false) {
+    const link = document.createElement('a');
+    let itemType = '';
+    let linkTarget = '#';
+
+    if ('greenScore' in item) {
+        itemType = 'restaurant';
+        linkTarget = `restaurant-detail.html?id=${item.id}`;
+    } else if ('amenities' in item) {
+        itemType = 'hotel';
+        linkTarget = `hotel-detail.html?id=${item.id}`;
+    } else if ('category' in item) {
+        itemType = 'lifestyle';
+        linkTarget = `#`;
+    }
+
+    link.href = linkTarget;
+    link.className = isExclusiveDeal ? '' : 'item-card-link';
+
+    const card = document.createElement('div');
+    card.className = isExclusiveDeal ? 'deal-card' : 'item-card';
+    const imageSrc = item.image || `https://placehold.co/600x400/eeeeee/cccccc?text=No+Image`;
+
+    let detailsHtml = '';
+
+    if (isExclusiveDeal) {
+        detailsHtml = `
+            <div class="deal-card-info">
+                <div>
+                    <div class="deal-card-name">${item.name}</div>
+                    <div class="meta">${item.category || item.type}</div>
+                </div>
+                <div class="deal-highlight">
+                    <span class="deal-highlight-text">ส่วนลด</span>
+                    <span class="deal-highlight-percent">${item.discount}%</span>
+                </div>
+            </div>
+        `;
+    } else if (itemType === 'restaurant') {
+      detailsHtml = `
+        <div class="item-info">
+            <div><div class="item-name">${item.name}</div></div>
+            <div><span class="rating">${item.rating} ★</span><span class="meta"> ฿${item.price}</span></div>
+            <div class="meta">ประเภท: ${item.type}</div>
+            <div class="meta location">${item.district}, ${item.province}</div>
+            <div class="green-score-container">
+              <div class="green-score-label">Green Score: ${item.greenScore}</div>
+              <div class="green-score-bar"><div class="green-score-fill" style="width: ${item.greenScore}%;"></div></div>
+            </div>
         </div>
-        <p class="text-gray-600 my-4">หมดอายุ: <span id="expiry-date" class="font-medium"></span></p>
-        <button id="close-modal" class="bg-primary text-white px-6 py-2 rounded-lg w-full hover:bg-green-800 transition">ปิด</button>
+      `;
+    } else if (itemType === 'hotel') {
+      detailsHtml = `
+        <div class="item-info">
+            <div><div class="item-name">${item.name}</div></div>
+            <div>
+              <span class="rating">${'★'.repeat(item.rating)}</span>
+              <span class="meta"> ฿${item.price}/คืน</span>
+            </div>
+            <div class="meta location">${item.province}</div>
+            <div class="amenities-container">
+              <div class="amenities-list">${item.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}</div>
+            </div>
+        </div>
+      `;
+    } else if (itemType === 'lifestyle') {
+      detailsHtml = `
+        <div class="item-info">
+            <div><div class="item-name">${item.name}</div></div>
+            <div><span class="rating">${item.rating} ★</span><span class="meta"> ${item.category}</span></div>
+            <div class="meta location">${item.province}</div>
+            <div class="amenities-container">
+              <div class="amenities-list">${item.details.map(d => `<span class="amenity-tag">${d}</span>`).join('')}</div>
+            </div>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="card-image">
+        <img src="${imageSrc}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Error';">
+        ${isExclusiveDeal ? '<div class="badge-exclusive">Exclusive Deal</div>' : ''}
+        ${item.isAd ? '<div class="badge-ad">Ad</div>' : ''}
+        ${item.discount && !isExclusiveDeal ? `<div class="badge-discount">-${item.discount}%</div>` : ''}
       </div>
-    </div>
-  </div>
+      ${detailsHtml}
+    `;
+    link.appendChild(card);
+    return link;
+  }
 
-  <!-- Toast Notification -->
-  <div id="toast-notification" class="fixed bottom-5 right-5 bg-primary text-white px-6 py-3 rounded-lg shadow-xl opacity-0">
-    <p id="toast-message"></p>
-  </div>
+  function findAndRenderTopDeals() {
+    const findTop = (data, category = null) => {
+        const list = category ? data.filter(item => item.category === category) : data;
+        if (list.length === 0) return null;
+        return list.reduce((prev, current) => (prev.discount > current.discount) ? prev : current);
+    };
 
-  <script>
-    // --- Database of all golf courses ---
-    const allGolfData = [
-        {
-            id: 1, name: "Siam Country Club", description: "สนามกอล์ฟระดับโลกในพัทยา พร้อมด้วยเลย์เอาต์ที่ท้าทายและสวยงาม เป็นที่รู้จักจากการจัดทัวร์นาเมนต์ระดับนานาชาติ", mainImage: "https://storage.googleapis.com/gdwp/2017/12/1-2BlackMountain_2.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 10, rating: 4.9,
-            highlights: [
-                { name: "Old Course", image: "https://www.siamcountryclub.com/oldcourse/wp-content/uploads/sites/2/2021/01/8.jpg", description: "สนามดั้งเดิมที่มีชื่อเสียงระดับโลก" },
-                { name: "Plantation Course", image: "https://www.siamcountryclub.com/plantation/wp-content/uploads/sites/3/2021/01/Plantation-Course-Hole-5-1.jpg", description: "สนามที่ท้าทายด้วยกรีนและบังเกอร์" },
-                { name: "Club House", image: "https://www.siamcountryclub.com/oldcourse/wp-content/uploads/sites/2/2021/01/1-1.jpg", description: "คลับเฮาส์หรูพร้อมสิ่งอำนวยความสะดวกครบครัน" }
-            ],
-            reviews: { average: 4.9, total: 120, items: [{ user: "โปรอาร์ม", date: "9 ก.ค. 2025", rating: 5, comment: "สนามดีมากครับ กรีนเร็วท้าทาย" }] },
-            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0000000000005!2d100.992541315359!3d13.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA3JzI0LjQiTiAxMDDCsDU5JzMzLjIiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "50 หมู่ 9 ต.โป่ง อ.บางละมุง จ.ชลบุรี 20150", courseInfo: ["18 หลุม x 4 สนาม", "ออกแบบโดย: I. Izumi, Schmidt-Curley", "พาร์ 72"], amenities: ["คลับเฮาส์หรู", "โปรช็อป", "ห้องอาหาร", "สนามไดร์ฟ"], contact: { tel: "+6638909700", facebook: "https://facebook.com/SiamCountryClub/", instagram: "https://instagram.com/siamcountryclub/" }
-        },
-        {
-            id: 2, name: "Alpine Golf Club", description: "หนึ่งในสนามกอล์ฟที่ดีที่สุดในประเทศไทย ออกแบบโดย Ronald M. Garl มีเลย์เอาต์ที่สวยงามและท้าทายความสามารถของนักกอล์ฟทุกระดับ", mainImage: "https://storage.googleapis.com/gdwp/2017/12/3-2rancho.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 15, rating: 4.8,
-            highlights: [
-                { name: "Signature Hole 7", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-10.jpg", description: "พาร์ 3 ที่มีกรีนเป็นเกาะ" },
-                { name: "Fairway", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-02.jpg", description: "แฟร์เวย์ที่ท้าทายและสวยงาม" },
-                { name: "Club House", image: "http://www.alpinegolfclub.com/wp-content/uploads/2016/06/gallery-12.jpg", description: "คลับเฮาส์พร้อมวิวสนามแบบพาโนรามา" }
-            ],
-            reviews: { average: 4.8, total: 95, items: [{ user: "คุณสุรชัย", date: "22 มิ.ย. 2025", rating: 5, comment: "สนามสวยและดูแลดีมากครับ" }] },
-            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.8000000000005!2d100.561000315359!3d13.73333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzYwLjAiTiAxMDDCsDMzJzM5LjYiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "99 หมู่ 9 ถ.คลองหลวง, คลองห้า, อ.คลองหลวง, จ.ปทุมธานี 12120", courseInfo: ["18 หลุม", "ออกแบบโดย: Ronald M. Garl", "พาร์ 72"], amenities: ["แคดดี้มืออาชีพ", "สปาและนวดแผนไทย", "ห้องอาหาร"], contact: { tel: "+6625773333", facebook: "https://facebook.com/alpinegolfclubbangkok/", instagram: "https://instagram.com/alpinegolfclubbkk/" }
-        },
-        {
-            id: 3, name: "Blue Canyon Country Club", description: "สนามกอล์ฟระดับตำนานในภูเก็ต เคยใช้จัดการแข่งขันระดับโลกมาแล้วหลายรายการ มีให้เลือกเล่นถึง 2 สนาม คือ Canyon Course และ Lakes Course", mainImage: "https://storage.googleapis.com/gdwp/2017/12/3-1bonanza02.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", discount: 5, rating: 4.7,
-            highlights: [
-                { name: "Canyon Course", image: "https://www.bluecanyonphuket.com/images/golf/canyon/gallery/1.jpg", description: "สนามที่ท้าทายและมีชื่อเสียง" },
-                { name: "Lakes Course", image: "https://www.bluecanyonphuket.com/images/golf/lakes/gallery/1.jpg", description: "สนามที่สวยงามด้วยทะเลสาบ" },
-                { name: "Pro Shop", image: "https://www.bluecanyonphuket.com/images/golf/pro-shop/1.jpg", description: "เลือกซื้ออุปกรณ์กอล์ฟชั้นนำ" }
-            ],
-            reviews: { average: 4.7, total: 150, items: [{ user: "Mr. Tanaka", date: "1 ก.ค. 2025", rating: 4, comment: "Very challenging course, beautiful scenery." }] },
-            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0000000000005!2d98.338000315359!3d7.80000078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNDgnMDAuMCJOIDk4wrAyMCcxNi44IkU!5e0!3m2!1sen!2sth!4v1651234567890', address: "165 หมู่ 1 ถ.เทพกระษัตรี ต.ไม้ขาว อ.ถลาง จ.ภูเก็ต 83110", courseInfo: ["2 สนาม 18 หลุม", "ออกแบบโดย: Yoshikazu Kato", "พาร์ 72"], amenities: ["โรงแรมในโครงการ", "ห้องอาหารนานาชาติ", "สปา"], contact: { tel: "+6676328088", facebook: "https://facebook.com/BlueCanyonCountryClub/", instagram: "https://instagram.com/bluecanyoncountryclub/" }
-        }
-    ];
+    const allTopDeals = [
+        findTop(restaurantData),
+        findTop(hotelData),
+        findTop(lifestyleData, 'สนามกอล์ฟ'),
+        findTop(lifestyleData, 'โรงภาพยนตร์'),
+        findTop(lifestyleData, 'ฟิตเนส'),
+        findTop(lifestyleData, 'ร้านนวด'),
+        findTop(lifestyleData, 'สปา')
+    ].filter(item => item !== null); 
 
-    // --- DOM Elements ---
-    const contentPlaceholder = document.getElementById('content-placeholder');
-    const golfContent = document.getElementById('golf-content');
-    const discountBtn = document.getElementById('discount-btn');
-    const modal = document.getElementById('discount-modal');
-    const modalContent = document.getElementById('modal-content');
-    const expenseSection = document.getElementById('expense-section');
-    const confirmBtn = document.getElementById('confirm-expense-btn');
-    const expenseInput = document.getElementById('expense-input');
-    const codeSection = document.getElementById('code-section');
-    const closeBtn = document.getElementById('close-modal');
-    const closeX = document.getElementById('modal-close-x');
-    const stars = document.querySelectorAll('#star-rating-input span');
-    const toast = document.getElementById('toast-notification');
-    const toastMessage = document.getElementById('toast-message');
-    let currentGolfCourse = null;
-
-    // --- Functions ---
+    const dealContainers = document.querySelectorAll('.scrollable-deals');
     
-    function populatePage(data) {
-        currentGolfCourse = data;
-        document.title = `${data.name} - รายละเอียดสนามกอล์ฟ`;
-        document.getElementById('golf-name').textContent = data.name;
-        document.getElementById('golf-description').textContent = data.description;
-        document.getElementById('main-image').src = data.mainImage;
-        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
-
-        // Highlights
-        const highlightGrid = document.getElementById('highlight-grid');
-        highlightGrid.innerHTML = '';
-        data.highlights.forEach(item => {
-            highlightGrid.innerHTML += `
-                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover" onerror="this.style.display='none'">
-                  <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
-                    <p class="text-gray-500 text-sm">${item.description}</p>
-                  </div>
-                </div>
-            `;
+    dealContainers.forEach(container => {
+        container.innerHTML = '';
+        allTopDeals.forEach(deal => {
+            container.appendChild(createItemCard(deal, true));
         });
+    });
+  }
 
-        // Reviews
-        const reviewStarsSummary = document.getElementById('review-stars-summary');
-        reviewStarsSummary.innerHTML = '';
-        for (let i = 1; i <= 5; i++) {
-            reviewStarsSummary.innerHTML += `<span class="${i <= data.rating ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
-        }
-        document.getElementById('review-summary-text').textContent = `${data.rating} / 5.0 (${data.reviews.total} รีวิว)`;
-        
-        const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = '';
-        data.reviews.items.forEach(review => {
-            reviewList.innerHTML += `
-                <div class="bg-white p-4 rounded-xl shadow">
-                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
-                  <p class="text-gray-800">“${review.comment}”</p>
-                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
-                </div>
-            `;
-        });
+  // --- RESTAURANT LOGIC ---
+  (function initRestaurants() {
+    const page = document.getElementById('page-restaurants');
+    const listEl = page.querySelector('.content-list');
+    const searchInput = page.querySelector('input[type="search"]');
+    const provinceFilter = page.querySelector('#filter-province-restaurant');
+    const districtFilter = page.querySelector('#filter-district-restaurant');
+    const typeFilter = page.querySelector('#filter-type-restaurant');
+    const diningStyleFilter = page.querySelector('#filter-dining-style-restaurant');
+    const priceFilter = page.querySelector('#filter-price-restaurant');
+    const sortOrder = page.querySelector('#sort-order-restaurant');
+    const randomBtn = page.querySelector('.random-btn');
+    const resetBtn = page.querySelector('.reset-btn');
+    const selectedNameEl = page.querySelector('#selected-name-restaurant');
+    let randomInterval = null;
+    
+    let allAdRestaurants = [];
+    let potentialFeaturedGreen = [];
+    let baseRestaurantList = [];
 
-        // Map
-        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
-        
-        // Details Column
-        document.getElementById('address').textContent = data.address;
-        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
-        document.getElementById('course-info').innerHTML = data.courseInfo.map(p => `<li>${p}</li>`).join('');
-        
-        // Contact
-        const telLink = document.getElementById('contact-tel');
-        if (data.contact && data.contact.tel) {
-            telLink.href = `tel:${data.contact.tel}`;
-            telLink.textContent = data.contact.tel;
-        }
-        if (data.contact) {
-            document.getElementById('social-media-links').innerHTML = `
-                <a href="${data.contact.facebook || '#'}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
-                <a href="${data.contact.instagram || '#'}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
-            `;
-        }
+    function setupInitialLists() {
+        const allRestaurants = [...restaurantData];
+        allAdRestaurants = allRestaurants.filter(r => r.isAd);
+        const nonAdRestaurants = allRestaurants.filter(r => !r.isAd);
 
-        // Show content
-        contentPlaceholder.classList.add('hidden');
-        golfContent.classList.remove('hidden');
+        const top20PercentCount = Math.ceil(nonAdRestaurants.length * 0.2);
+        potentialFeaturedGreen = [...nonAdRestaurants].sort((a, b) => b.greenScore - a.greenScore).slice(0, top20PercentCount);
+        
+        const potentialFeaturedIds = potentialFeaturedGreen.map(r => r.id);
+        baseRestaurantList = nonAdRestaurants.filter(r => !potentialFeaturedIds.includes(r.id));
     }
 
-    function showToast(message) {
-        toastMessage.textContent = message;
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
-    }
+    populateFilter(provinceFilter, restaurantData, 'province');
 
-    function openModal() {
-        if (!currentGolfCourse) return;
-        expenseInput.value = '';
-        codeSection.classList.add('hidden');
-        expenseSection.classList.remove('hidden');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-        }, 10);
+    function applyFilters() {
+        if (randomInterval) clearInterval(randomInterval);
+        selectedNameEl.textContent = '';
+
+        const term = searchInput.value.trim().toLowerCase();
+        
+        const matchesFilters = (r) => {
+            if (term && !r.name.toLowerCase().includes(term)) return false;
+            if (provinceFilter.value && r.province !== provinceFilter.value) return false;
+            if (districtFilter.value && r.district !== districtFilter.value) return false;
+            if (typeFilter.value && r.type !== typeFilter.value) return false;
+            if (diningStyleFilter.value && r.diningStyle !== diningStyleFilter.value) return false;
+            if (priceFilter.value) {
+                const [min, max] = priceFilter.value.split('-');
+                if (min && r.price < +min) return false;
+                if (max && max !== '' && r.price > +max) return false;
+            }
+            return true;
+        };
+
+        const displayableAds = allAdRestaurants.filter(matchesFilters);
+        
+        const filteredPotentialGreen = potentialFeaturedGreen.filter(matchesFilters);
+        const featuredCount = Math.ceil(baseRestaurantList.length * 0.1);
+        const displayableFeaturedGreen = [...filteredPotentialGreen].sort(() => 0.5 - Math.random()).slice(0, featuredCount);
+        
+        const featuredIds = displayableFeaturedGreen.map(r => r.id);
+        const nonFeaturedGreen = filteredPotentialGreen.filter(r => !featuredIds.includes(r.id));
+        
+        let displayableBase = [...baseRestaurantList.filter(matchesFilters), ...nonFeaturedGreen];
+
+        if (sortOrder.value) {
+            const [key, dir] = sortOrder.value.split('_');
+            displayableBase.sort((a, b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
+        }
+        
+        const fullListToRender = [...displayableAds, ...displayableFeaturedGreen, ...displayableBase];
+        render(fullListToRender);
     }
     
-    function closeModal() {
-        modalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    function getGolfIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return parseInt(params.get('id'));
-    }
-
-    // --- Event Listeners ---
-    discountBtn.addEventListener('click', openModal);
-
-    confirmBtn.addEventListener('click', () => {
-      const amount = parseFloat(expenseInput.value) || 0;
-      if (amount <= 0) {
-          showToast("กรุณากรอกยอดค่าใช้จ่ายที่ถูกต้อง");
-          return;
+    function render(data) {
+      listEl.innerHTML = '';
+      if (data.length === 0) {
+        listEl.innerHTML = '<div class="message-box">ไม่พบร้านอาหารที่ตรงกับเงื่อนไข</div>';
+        return;
       }
-      const discountAmt = Math.round(amount * currentGolfCourse.discount / 100);
-      const netPrice = amount - discountAmt;
-
-      document.getElementById('full-price').textContent = amount.toLocaleString();
-      document.getElementById('discount-percent').textContent = currentGolfCourse.discount;
-      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
-      document.getElementById('net-price').textContent = netPrice.toLocaleString();
-      document.getElementById('discount-code').textContent = `SCGGOLF${Math.floor(Math.random() * 900) + 100}`;
-
-      const now = new Date();
-      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
-      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      expenseSection.classList.add('hidden');
-      codeSection.classList.remove('hidden');
-    });
-
-    closeBtn.addEventListener('click', closeModal);
-    closeX.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    let selectedRating = 0;
-    stars.forEach(star => {
-        star.addEventListener('click', () => {
-            selectedRating = star.getAttribute('data-value');
-            stars.forEach(s => {
-                s.classList.remove('text-yellow-500', 'text-gray-300');
-                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+      data.forEach(r => listEl.appendChild(createItemCard(r)));
+    }
+    
+    function updateDistricts() {
+        const prov = provinceFilter.value;
+        districtFilter.innerHTML = '<option value="">อำเภอ/เขต</option>';
+        districtFilter.disabled = !prov;
+        if (prov) {
+            const districts = [...new Set(restaurantData.filter(r => r.province === prov).map(r => r.district))].sort();
+            districts.forEach(d => {
+                let opt = document.createElement('option');
+                opt.value = opt.text = d;
+                districtFilter.add(opt);
             });
-        });
-    });
-
-    document.getElementById('submit-review').addEventListener('click', () => {
-      const comment = document.getElementById('comment-input').value;
-      if (selectedRating === 0) {
-          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
-          return;
-      }
-      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
-      // Here you would typically send the review to a server
-      document.getElementById('comment-input').value = '';
-      selectedRating = 0;
-      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
-    });
-
-    // --- Initial Page Load ---
-    const golfId = getGolfIdFromUrl();
-    const dataToDisplay = allGolfData.find(r => r.id === golfId) || allGolfData[0];
-    
-    if (dataToDisplay) {
-        populatePage(dataToDisplay);
-    } else {
-        contentPlaceholder.innerHTML = `<h1 class="text-2xl text-center text-red-500 mt-10">ไม่พบข้อมูลสนามกอล์ฟ</h1>`;
+        }
+        applyFilters();
     }
 
-  </script>
+    function handleRandomClick() {
+        if (randomInterval) clearInterval(randomInterval);
+        const cards = Array.from(listEl.querySelectorAll('.item-card'));
+        if (!cards.length) return;
+
+        selectedNameEl.textContent = 'กำลังสุ่ม...';
+        cards.forEach(c => c.classList.remove('highlight'));
+
+        let idx = 0;
+        const totalSpins = cards.length * 2 + Math.floor(Math.random() * cards.length);
+        let counter = 0;
+
+        randomInterval = setInterval(() => {
+            cards.forEach(c => c.classList.remove('highlight'));
+            if (cards[idx]) {
+                cards[idx].classList.add('highlight');
+            }
+            idx = (idx + 1) % cards.length;
+            if (counter++ > totalSpins) {
+                clearInterval(randomInterval);
+                randomInterval = null;
+                const finalIndex = idx > 0 ? idx - 1 : cards.length - 1;
+                cards.forEach(c => c.classList.remove('highlight'));
+                const selectedCard = cards[finalIndex];
+                if (selectedCard) {
+                    selectedCard.classList.add('highlight');
+                    selectedCard.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    selectedNameEl.textContent = `ร้านที่เลือก: ${selectedCard.querySelector('.item-name').textContent}`;
+                }
+            }
+        }, 100);
+    }
+
+    function reset() {
+      searchInput.value = '';
+      provinceFilter.value = '';
+      typeFilter.value = '';
+      diningStyleFilter.value = '';
+      priceFilter.value = '';
+      sortOrder.value = '';
+      updateDistricts();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    provinceFilter.addEventListener('change', updateDistricts);
+    districtFilter.addEventListener('input', applyFilters);
+    typeFilter.addEventListener('input', applyFilters);
+    diningStyleFilter.addEventListener('input', applyFilters);
+    priceFilter.addEventListener('input', applyFilters);
+    sortOrder.addEventListener('input', applyFilters);
+    randomBtn.addEventListener('click', handleRandomClick);
+    resetBtn.addEventListener('click', reset);
+    
+    setupInitialLists();
+    applyFilters();
+  })();
+
+  // --- HOTEL LOGIC ---
+  (function initHotels() {
+    const page = document.getElementById('page-hotels');
+    const listEl = page.querySelector('.content-list');
+    const searchInput = page.querySelector('input[type="search"]');
+    const provinceFilter = page.querySelector('#filter-province-hotel');
+    const priceFilter = page.querySelector('#filter-price-hotel');
+    const ratingFilter = page.querySelector('#filter-rating-hotel');
+    const resetBtn = page.querySelector('.reset-btn');
+
+    populateFilter(provinceFilter, hotelData, 'province');
+
+    function applyFilters() {
+      const term = searchInput.value.trim().toLowerCase();
+      let data = hotelData.filter(h => {
+        if (term && !h.name.toLowerCase().includes(term)) return false;
+        if (provinceFilter.value && h.province !== provinceFilter.value) return false;
+        if (ratingFilter.value && h.rating != ratingFilter.value) return false;
+        if (priceFilter.value) {
+          const [min, max] = priceFilter.value.split('-');
+          if (min && h.price < +min) return false;
+          if (max && max !== '' && h.price > +max) return false;
+        }
+        return true;
+      });
+      render(data);
+    }
+
+    function render(data) {
+      listEl.innerHTML = '';
+      if (data.length === 0) {
+        listEl.innerHTML = '<div class="message-box">ไม่พบโรงแรมที่ตรงกับเงื่อนไข</div>';
+        return;
+      }
+      data.forEach(h => listEl.appendChild(createItemCard(h)));
+    }
+
+    function reset() {
+      searchInput.value = '';
+      provinceFilter.value = '';
+      priceFilter.value = '';
+      ratingFilter.value = '';
+      applyFilters();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    provinceFilter.addEventListener('input', applyFilters);
+    priceFilter.addEventListener('input', applyFilters);
+    ratingFilter.addEventListener('input', applyFilters);
+    resetBtn.addEventListener('click', reset);
+    applyFilters();
+  })();
+
+  // --- LIFESTYLE LOGIC ---
+  (function initLifestyle() {
+    const page = document.getElementById('page-lifestyle');
+    const listEl = page.querySelector('.content-list');
+    const searchInput = page.querySelector('input[type="search"]');
+    const categoryFilter = page.querySelector('#filter-category-lifestyle');
+    const provinceFilter = page.querySelector('#filter-province-lifestyle');
+    const sortOrder = page.querySelector('#sort-order-lifestyle');
+    const resetBtn = page.querySelector('.reset-btn');
+
+    populateFilter(provinceFilter, lifestyleData, 'province');
+
+    function applyFilters() {
+      const term = searchInput.value.trim().toLowerCase();
+      let data = lifestyleData.filter(item => {
+        if (term && !item.name.toLowerCase().includes(term)) return false;
+        if (provinceFilter.value && item.province !== provinceFilter.value) return false;
+        if (categoryFilter.value && item.category !== categoryFilter.value) return false;
+        return true;
+      });
+
+      if (sortOrder.value === 'discount_desc') {
+        data.sort((a,b) => b.discount - a.discount);
+      }
+      render(data);
+    }
+
+    function render(data) {
+      listEl.innerHTML = '';
+      if (data.length === 0) {
+        listEl.innerHTML = '<div class="message-box">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</div>';
+        return;
+      }
+      data.forEach(item => listEl.appendChild(createItemCard(item)));
+    }
+
+    function reset() {
+      searchInput.value = '';
+      provinceFilter.value = '';
+      categoryFilter.value = '';
+      sortOrder.value = '';
+      applyFilters();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    provinceFilter.addEventListener('input', applyFilters);
+    categoryFilter.addEventListener('input', applyFilters);
+    sortOrder.addEventListener('input', applyFilters);
+    resetBtn.addEventListener('click', reset);
+    applyFilters();
+  })();
+  
+  // --- Initial setup for all pages ---
+  findAndRenderTopDeals();
+
+});
+</script>
 </body>
 </html>
