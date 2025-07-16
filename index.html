@@ -135,7 +135,8 @@
     .scrollable-deals::-webkit-scrollbar { display: none; }
 
     .deal-card {
-      flex: 0 0 180px;
+      width: 180px; /* Set fixed width */
+      flex-shrink: 0; /* Prevent shrinking */
       background: var(--card-bg);
       border-radius: var(--card-radius);
       box-shadow: var(--shadow-sm);
@@ -151,7 +152,7 @@
     }
     .deal-card img {
       width: 100%;
-      height: 90px; /* Adjusted height */
+      height: 90px;
       object-fit: cover;
     }
     .deal-card-info {
@@ -168,11 +169,20 @@
       text-overflow: ellipsis;
       font-size: 14px;
     }
-    .deal-card-discount {
-      color: var(--discount-color);
-      font-weight: 700;
-      font-size: 13px;
-      margin-top: 4px;
+    .deal-highlight {
+        margin-top: 8px;
+        text-align: center;
+    }
+    .deal-highlight-text {
+        font-size: 11px;
+        color: var(--light-text);
+        display: block;
+    }
+    .deal-highlight-percent {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--discount-color);
+        line-height: 1;
     }
     .badge-exclusive {
       position: absolute;
@@ -381,7 +391,8 @@
         }
 
         .deal-card {
-          flex: 0 0 160px;
+          width: 160px;
+          flex-shrink: 0;
         }
         
         .card-image img {
@@ -583,7 +594,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="deal-card-name">${item.name}</div>
                     <div class="meta">${item.category || item.type}</div>
                 </div>
-                <div class="deal-card-discount">ลด ${item.discount}%</div>
+                <div class="deal-highlight">
+                    <span class="deal-highlight-text">ส่วนลด</span>
+                    <span class="deal-highlight-percent">${item.discount}%</span>
+                </div>
             </div>
         `;
     } else if (itemType === 'restaurant') {
