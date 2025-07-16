@@ -70,7 +70,7 @@
                 <p id="item-description" class="text-gray-700 mt-2 max-w-2xl"></p>
             </div>
             <button id="discount-btn" class="mt-4 sm:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105 w-full sm:w-auto">
-                รับโค้dส่วนลด
+                รับโค้ดส่วนลด
             </button>
           </div>
         </section>
@@ -206,4 +206,202 @@
             reviews: { average: 4.8, total: 180, items: [{ user: "คุณซี", date: "14 ก.ค. 2025", rating: 5, comment: "พนักงานนวดดีมากค่ะ สบายตัวสุดๆ" }] },
             mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.8000000000005!2d100.561000315359!3d13.73333378901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzYwLjAiTiAxMDDCsDMzJzM5LjYiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "ชั้น 3, Terminal 21 Asok, กรุงเทพฯ", details: ["มีหลายสาขา", "ควรจองล่วงหน้า"], amenities: ["ห้องส่วนตัว", "เครื่องดื่มต้อนรับ"], contact: { tel: "+6621234570", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg" }
         },
-        {id: 14, category: 'สปา', name: 'Divana Scentuara Spa', description: "สปาสุดหรูในบ้านโบราณ บรรยากาศร่มรื่น ให้บริการทรีทเมนท์ที่ผสมผสานความเป็นไทยและตะวันตกอย่างลงตัว", mainImage
+        {id: 14, category: 'สปา', name: 'Divana Scentuara Spa', description: "สปาสุดหรูในบ้านโบราณ บรรยากาศร่มรื่น ให้บริการทรีทเมนท์ที่ผสมผสานความเป็นไทยและตะวันตกอย่างลงตัว", mainImage: 'https://images.pexels.com/photos/3738349/pexels-photo-3738349.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', discount: 25, rating: 4.9,
+            highlights: [
+                { name: "Organic Golden Silk Royal Pampering", image: "https://images.pexels.com/photos/3985321/pexels-photo-3985321.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "ทรีทเมนท์ซิกเนเจอร์ด้วยรังไหมสีทอง" },
+                { name: "Aromatic Steam", image: "https://images.pexels.com/photos/7262912/pexels-photo-7262912.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "อบไอน้ำด้วยสมุนไพรหอม" },
+                { name: "Floral Bath", image: "https://images.pexels.com/photos/3212164/pexels-photo-3212164.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "แช่น้ำนมผสมดอกไม้" }
+            ],
+            reviews: { average: 4.9, total: 98, items: [{ user: "คุณดี", date: "15 ก.ค. 2025", rating: 5, comment: "สวรรค์บนดินจริงๆ ค่ะ บริการดี สถานที่สวยมาก" }] },
+            mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.9000000000005!2d100.520000315359!3d13.72500078901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzMwLjAiTiAxMDDCsDMxJzEyLjAiRQ!5e0!3m2!1sen!2sth!4v1651234567890', address: "ซอยสมคิด, เพลินจิต, กรุงเทพฯ", details: ["ใช้ผลิตภัณฑ์ออร์แกนิก", "ต้องจองล่วงหน้าเท่านั้น"], amenities: ["ห้องทรีทเมนท์ส่วนตัว", "สวนสวย"], contact: { tel: "+6621234571", facebook: "https://facebook.com/scg", instagram: "https://instagram.com/scg" }
+        }
+    ];
+
+    // --- DOM Elements ---
+    const contentPlaceholder = document.getElementById('content-placeholder');
+    const lifestyleContent = document.getElementById('lifestyle-content');
+    const discountBtn = document.getElementById('discount-btn');
+    const modal = document.getElementById('discount-modal');
+    const modalContent = document.getElementById('modal-content');
+    const expenseSection = document.getElementById('expense-section');
+    const confirmBtn = document.getElementById('confirm-expense-btn');
+    const expenseInput = document.getElementById('expense-input');
+    const codeSection = document.getElementById('code-section');
+    const closeBtn = document.getElementById('close-modal');
+    const closeX = document.getElementById('modal-close-x');
+    const stars = document.querySelectorAll('#star-rating-input span');
+    const toast = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    let currentItem = null;
+
+    // --- Functions ---
+    
+    function populatePage(data) {
+        currentItem = data;
+        document.title = `${data.name} - รายละเอียด`;
+        document.getElementById('item-name').textContent = data.name;
+        document.getElementById('item-description').textContent = data.description;
+        document.getElementById('main-image').src = data.mainImage;
+        document.getElementById('image-discount-badge').textContent = `ลด ${data.discount}%`;
+
+        // Highlights
+        const highlightGrid = document.getElementById('highlight-grid');
+        highlightGrid.innerHTML = '';
+        data.highlights.forEach(item => {
+            highlightGrid.innerHTML += `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover" onerror="this.style.display='none'">
+                  <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
+                    <p class="text-gray-500 text-sm">${item.description}</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        // Reviews
+        const reviewStarsSummary = document.getElementById('review-stars-summary');
+        reviewStarsSummary.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            reviewStarsSummary.innerHTML += `<span class="${i <= data.rating ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+        }
+        document.getElementById('review-summary-text').textContent = `${data.rating} / 5.0 (${data.reviews.total} รีวิว)`;
+        
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+        data.reviews.items.forEach(review => {
+            reviewList.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow">
+                  <div class="flex items-center mb-1">${'★'.repeat(review.rating)}<span class="text-gray-300">${'★'.repeat(5 - review.rating)}</span></div>
+                  <p class="text-gray-800">“${review.comment}”</p>
+                  <p class="text-gray-500 text-sm mt-2">— ${review.user}, ${review.date}</p>
+                </div>
+            `;
+        });
+
+        // Map
+        document.getElementById('map-container').innerHTML = `<iframe src="${data.mapEmbed}" class="w-full h-64 md:h-96" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
+        
+        // Details Column
+        document.getElementById('address').textContent = data.address;
+        document.getElementById('amenities').innerHTML = data.amenities.map(a => `<li>${a}</li>`).join('');
+        document.getElementById('details-list').innerHTML = data.details.map(p => `<li>${p}</li>`).join('');
+        
+        // Contact
+        const telLink = document.getElementById('contact-tel');
+        if (data.contact && data.contact.tel) {
+            telLink.href = `tel:${data.contact.tel}`;
+            telLink.textContent = data.contact.tel;
+        }
+        if (data.contact) {
+            document.getElementById('social-media-links').innerHTML = `
+                <a href="${data.contact.facebook || '#'}" class="text-blue-600 hover:underline" target="_blank">Facebook</a>
+                <a href="${data.contact.instagram || '#'}" class="text-pink-500 hover:underline" target="_blank">Instagram</a>
+            `;
+        }
+
+        // Show content
+        contentPlaceholder.classList.add('hidden');
+        lifestyleContent.classList.remove('hidden');
+    }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openModal() {
+        if (!currentItem) return;
+        expenseInput.value = '';
+        codeSection.classList.add('hidden');
+        expenseSection.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function getItemIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return parseInt(params.get('id'));
+    }
+
+    // --- Event Listeners ---
+    discountBtn.addEventListener('click', openModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const amount = parseFloat(expenseInput.value) || 0;
+      if (amount <= 0) {
+          showToast("กรุณากรอกยอดค่าใช้จ่ายที่ถูกต้อง");
+          return;
+      }
+      const discountAmt = Math.round(amount * currentItem.discount / 100);
+      const netPrice = amount - discountAmt;
+
+      document.getElementById('full-price').textContent = amount.toLocaleString();
+      document.getElementById('discount-percent').textContent = currentItem.discount;
+      document.getElementById('discount-amount').textContent = discountAmt.toLocaleString();
+      document.getElementById('net-price').textContent = netPrice.toLocaleString();
+      document.getElementById('discount-code').textContent = `SCGLIFE${Math.floor(Math.random() * 900) + 100}`;
+
+      const now = new Date();
+      const expiry = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      document.getElementById('expiry-date').textContent = expiry.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      expenseSection.classList.add('hidden');
+      codeSection.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    closeX.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    let selectedRating = 0;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('text-yellow-500', 'text-gray-300');
+                s.classList.add(s.getAttribute('data-value') <= selectedRating ? 'text-yellow-500' : 'text-gray-300');
+            });
+        });
+    });
+
+    document.getElementById('submit-review').addEventListener('click', () => {
+      const comment = document.getElementById('comment-input').value;
+      if (selectedRating === 0) {
+          showToast("กรุณาให้คะแนนดาวก่อนส่งรีวิว");
+          return;
+      }
+      showToast(`ขอบคุณสำหรับรีวิว ${selectedRating} ดาว!`);
+      // Here you would typically send the review to a server
+      document.getElementById('comment-input').value = '';
+      selectedRating = 0;
+      stars.forEach(s => s.classList.replace('text-yellow-500', 'text-gray-300'));
+    });
+
+    // --- Initial Page Load ---
+    const lifestyleId = getItemIdFromUrl();
+    const dataToDisplay = allLifestyleData.find(r => r.id === lifestyleId) || allLifestyleData[0];
+    
+    if (dataToDisplay) {
+        populatePage(dataToDisplay);
+    } else {
+        contentPlaceholder.innerHTML = `<h1 class="text-2xl text-center text-red-500 mt-10">ไม่พบข้อมูล</h1>`;
+    }
+
+  </script>
+</body>
+</html>
